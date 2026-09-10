@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oyun Platformu & Clumsy Bird</title>
+    <title>Clumsy Bird</title>
     <style>
         * {
             box-sizing: border-box;
@@ -22,86 +22,8 @@
             color: #fff;
         }
 
-        /* --- Ana Menü Ekranı --- */
-        #main-menu {
-            position: relative;
-            text-align: center;
-            background: rgba(18, 22, 35, 0.85);
-            backdrop-filter: blur(16px);
-            padding: 45px 35px;
-            border-radius: 24px;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 30px rgba(99, 102, 241, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            width: 380px;
-        }
-
-        #main-menu h1 {
-            margin-bottom: 30px;
-            font-size: 28px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #fff, #818cf8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
-            letter-spacing: 0.5px;
-        }
-
-        .game-btn {
-            display: block;
-            width: 100%;
-            margin: 14px 0;
-            padding: 15px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            background: linear-gradient(135deg, #6366f1, #4f46e5);
-            color: white;
-            border: none;
-            border-radius: 14px;
-            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.35);
-            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .game-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.5);
-            background: linear-gradient(135deg, #818cf8, #6366f1);
-        }
-
-        .game-btn.disabled {
-            background: rgba(255, 255, 255, 0.03);
-            color: #555;
-            cursor: not-allowed;
-            box-shadow: none;
-            transform: none;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-        }
-
-        .menu-settings-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 38px;
-            height: 38px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.2s;
-        }
-        .menu-settings-btn:hover {
-            transform: scale(1.1);
-            background: rgba(255, 255, 255, 0.12);
-            border-color: #818cf8;
-        }
-
         /* --- Oyun Konteyneri --- */
         #game-container {
-            display: none;
             position: relative;
             width: 400px;
             height: 600px;
@@ -194,8 +116,9 @@
             border-color: #818cf8;
         }
 
-        #shop-toggle { right: 65px; font-size: 18px; display: none; }
-        #pipe-toggle { right: 15px; display: none; }
+        #settings-toggle { right: 115px; font-size: 18px; display: flex; }
+        #shop-toggle { right: 65px; font-size: 18px; display: flex; }
+        #pipe-toggle { right: 15px; display: flex; }
 
         .pipe-preview-icon {
             width: 16px;
@@ -232,6 +155,86 @@
             margin-bottom: 12px;
             text-align: center;
             color: #818cf8;
+        }
+
+        /* --- Ayarlar Modalı --- */
+        #settings-modal {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 300px;
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 35;
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            transition: all 0.2s ease;
+        }
+        #settings-modal.active {
+            transform: translate(-50%, -50%) scale(1);
+            display: flex;
+        }
+
+        .settings-group {
+            margin-bottom: 16px;
+        }
+        .settings-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+        }
+
+        .lang-options {
+            display: flex;
+            gap: 10px;
+        }
+        .lang-btn {
+            flex: 1;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 8px;
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            transition: 0.2s;
+        }
+        .lang-btn:hover {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: #818cf8;
+            color: #fff;
+        }
+        .lang-btn.active {
+            background: #6366f1;
+            color: #fff;
+            border-color: #818cf8;
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .slider-container input[type=range] {
+            flex: 1;
+            accent-color: #6366f1;
+            cursor: pointer;
+        }
+        .slider-val {
+            font-size: 11px;
+            font-weight: bold;
+            color: #818cf8;
+            width: 32px;
+            text-align: right;
         }
 
         /* --- Mağaza Modalı --- */
@@ -368,7 +371,14 @@
             padding: 6px;
             text-align: center;
         }
-        .trail-card .name { font-size: 10px; color: #cbd5e1; font-weight: 600; margin-bottom: 4px; }
+        .trail-preview-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-bottom: 4px;
+            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 0 8px rgba(0,0,0,0.5);
+        }
         .trail-card .cost { font-size: 9px; color: #ffd700; font-weight: bold; }
         .trail-card.locked { opacity: 0.5; background: rgba(0, 0, 0, 0.4); }
         .trail-card.locked::after { content: '🔒'; position: absolute; top: 4px; right: 4px; font-size: 8px; }
@@ -413,31 +423,6 @@
         }
         .color-btn:hover { transform: scale(1.15); }
         .color-btn.active { border-color: #fff; transform: scale(1.1); box-shadow: 0 0 10px rgba(255,255,255,0.8); }
-
-        #settings-dropdown { right: 20px; width: 220px; top: 65px; text-align: left; }
-
-        .setting-item { margin-bottom: 12px; font-size: 12px; }
-        .setting-item label { display: block; margin-bottom: 5px; color: #cbd5e1; font-weight: 500; }
-        .setting-item input[type="range"] { width: 100%; cursor: pointer; accent-color: #6366f1; }
-
-        .menu-back-btn {
-            width: 100%;
-            margin-top: 8px;
-            padding: 8px;
-            background: rgba(239, 68, 68, 0.2);
-            color: #f87171;
-            border: 1px solid rgba(239, 68, 68, 0.4);
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 11px;
-            font-weight: bold;
-            text-align: center;
-            transition: 0.2s;
-        }
-        .menu-back-btn:hover {
-            background: rgba(239, 68, 68, 0.35);
-            color: #fff;
-        }
 
         #game-overlay {
             position: absolute;
@@ -507,52 +492,9 @@
         }
         #start-btn:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6); }
         .instructions { margin-top: 15px; font-size: 11px; color: #94a3b8; text-align: center; line-height: 1.5; }
-
-        /* --- Oyun İçi Ana Menüye Dön Butonu --- */
-        #in-game-menu-btn {
-            position: absolute;
-            bottom: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 8px 16px;
-            background: rgba(239, 68, 68, 0.2);
-            color: #f87171;
-            border: 1px solid rgba(239, 68, 68, 0.4);
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 11px;
-            font-weight: bold;
-            text-align: center;
-            transition: 0.2s;
-            z-index: 12;
-        }
-        #in-game-menu-btn:hover {
-            background: rgba(239, 68, 68, 0.35);
-            color: #fff;
-        }
     </style>
 </head>
 <body>
-
-    <!-- Ana Menü -->
-    <div id="main-menu">
-        <div class="menu-settings-btn" id="main-settings-toggle" title="Ayarlar">⚙️</div>
-        <h1 id="menu-main-title">Oyun Platformu</h1>
-        <button class="game-btn" id="btn-flappy" onclick="startClumsyBirdGame()">1. Clumsy Bird</button>
-        <button class="game-btn disabled" id="btn-soon">2. Yakında...</button>
-        
-        <div id="settings-dropdown" class="dropdown-menu">
-            <div class="menu-title" id="settings-title-lbl">Ayarlar</div>
-            <div class="setting-item">
-                <label><span id="sfx-lbl">Ses Efektleri</span>: <span id="sfx-val">100</span>%</label>
-                <input type="range" id="sfx-volume" min="0" max="100" value="100">
-            </div>
-            <div class="setting-item">
-                <label><span id="bgm-lbl">Arka Plan Müziği</span>: <span id="bgm-val">50</span>%</label>
-                <input type="range" id="bgm-volume" min="0" max="100" value="50">
-            </div>
-        </div>
-    </div>
 
     <!-- Oyun Konteyneri -->
     <div id="game-container">
@@ -568,7 +510,37 @@
             <div id="slot-magnet" class="active-power-slot">🧲 0x</div>
         </div>
 
+        <div id="settings-toggle" class="selector-toggle" title="Ayarlar">⚙️</div>
         <div id="shop-toggle" class="selector-toggle" title="Mağaza">🛍️</div>
+
+        <!-- Ayarlar Modalı -->
+        <div id="settings-modal">
+            <div class="menu-title" id="settings-title">AYARLAR</div>
+            
+            <div class="settings-group">
+                <label id="lang-label">Dil / Language</label>
+                <div class="lang-options">
+                    <div id="lang-tr" class="lang-btn active" onclick="setLanguage('tr')">TR</div>
+                    <div id="lang-en" class="lang-btn" onclick="setLanguage('en')">English</div>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <label id="sfx-label">Efekt Sesi (SFX)</label>
+                <div class="slider-container">
+                    <input type="range" id="sfx-slider" min="0" max="100" value="100" oninput="updateSfxVolume(this.value)">
+                    <span id="sfx-val" class="slider-val">100%</span>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <label id="bgm-label">Müzik Sesi (BGM)</label>
+                <div class="slider-container">
+                    <input type="range" id="bgm-slider" min="0" max="100" value="50" oninput="updateBgmVolume(this.value)">
+                    <span id="bgm-val" class="slider-val">50%</span>
+                </div>
+            </div>
+        </div>
 
         <div id="shop-modal">
             <div class="shop-tabs">
@@ -628,17 +600,11 @@
         </div>
 
         <canvas id="canvas" width="400" height="600"></canvas>
-
-        <!-- Oyun İçindeyken En Alt Ortada Ana Menüye Dön Butonu -->
-        <button id="in-game-menu-btn" onclick="returnToMainMenu()">Ana Menüye Dön</button>
     </div>
 
 <script>
     const translations = {
         tr: {
-            menuTitle: "Oyun Platformu",
-            btnFlappy: "1. Clumsy Bird",
-            btnSoon: "2. Yakında...",
             scoreLbl: "Puan",
             charsTab: "Karakter",
             bgsTab: "Arka Plan",
@@ -649,15 +615,11 @@
             magnetTitle: "Mıknatıs (Magnet)",
             magnetDesc: "Altınları otomatik çeker.",
             pipeColorLbl: "Boru Rengi",
-            settingsTitle: "Ayarlar",
-            sfxLbl: "Ses Efektleri",
-            bgmLbl: "Arka Plan Müziği",
-            menuBackBtn: "Ana Menüye Dön",
             flappyStartTitle: "CLUMSY BIRD",
             startBtn: "BAŞLA",
             restartBtn: "Yeniden Başla",
             flappyInstructions: "Zıplamak için Tıkla / Space<br>İstediğin özellikleri seçip Başla butonuna basabilirsin!",
-            unlockedText: "Açık",
+            unlockedText: "Unlocked",
             insufficientCoins: "❌ Yetersiz Altın!",
             insufficientPoints: "❌ Yetersiz Puan!",
             doubleActive: "✨ Çift Altın Aktif!",
@@ -665,22 +627,99 @@
             bonusReward: "🎉 +{val} ALTIN ÖDÜL!",
             scoreText: "Puan",
             highScoreText: "Rekor",
-            earnedThisRound: "Bu El Kazanılan"
+            earnedThisRound: "Bu El Kazanılan",
+            settingsTitle: "AYARLAR",
+            langLabel: "Dil / Language",
+            sfxLabel: "Efekt Sesi (SFX)",
+            bgmLabel: "Müzik Sesi (BGM)",
+            // Arka Plan İsimleri (TR)
+            bg_classic_sky: "Klasik Gökyüzü",
+            bg_midnight_dark: "Gece Yarısı",
+            bg_sunset_glow: "Gün Batımı",
+            bg_cyberpunk_city: "Siberpunk",
+            bg_deep_space: "Derin Uzay",
+            bg_candy_land: "Şeker Diyarı",
+            bg_matrix_green: "Matris",
+            bg_desert_sand: "Çöl Kumları",
+            bg_arctic_frost: "Kutup Buzulu",
+            bg_volcano_fire: "Volkan Ateşi",
+            bg_neon_synth: "Neon Synth",
+            bg_autumn_forest: "Sonbahar Ormanı",
+            bg_royal_purple: "Kraliyet Moru",
+            bg_abyss_ocean: "Okyanus Dip",
+            bg_golden_heaven: "Altın Cennet"
+        },
+        en: {
+            scoreLbl: "Score",
+            charsTab: "Characters",
+            bgsTab: "Background",
+            trailsTab: "Trails",
+            powersTab: "Powers",
+            doubleTitle: "Double Gold (2x)",
+            doubleDesc: "Doubles collected coins (30s).",
+            magnetTitle: "Magnet",
+            magnetDesc: "Automatically pulls coins (30s).",
+            pipeColorLbl: "Pipe Color",
+            flappyStartTitle: "CLUMSY BIRD",
+            startBtn: "START",
+            restartBtn: "Restart",
+            flappyInstructions: "Click / Space to Jump<br>Select your powers and hit Start!",
+            unlockedText: "Unlocked",
+            insufficientCoins: "❌ Insufficient Coins!",
+            insufficientPoints: "❌ Insufficient Points!",
+            doubleActive: "✨ Double Gold Active!",
+            magnetActive: "🧲 Magnet Active!",
+            bonusReward: "🎉 +{val} COIN REWARD!",
+            scoreText: "Score",
+            highScoreText: "High Score",
+            earnedThisRound: "Earned This Round",
+            settingsTitle: "SETTINGS",
+            langLabel: "Language / Dil",
+            sfxLabel: "SFX Volume",
+            bgmLabel: "BGM Volume",
+            // Arka Plan İsimleri (EN)
+            bg_classic_sky: "Classic Sky",
+            bg_midnight_dark: "Midnight Dark",
+            bg_sunset_glow: "Sunset Glow",
+            bg_cyberpunk_city: "Cyberpunk",
+            bg_deep_space: "Deep Space",
+            bg_candy_land: "Candy Land",
+            bg_matrix_green: "Matrix Green",
+            bg_desert_sand: "Desert Sand",
+            bg_arctic_frost: "Arctic Frost",
+            bg_volcano_fire: "Volcano Fire",
+            bg_neon_synth: "Neon Synth",
+            bg_autumn_forest: "Autumn Forest",
+            bg_royal_purple: "Royal Purple",
+            bg_abyss_ocean: "Abyss Ocean",
+            bg_golden_heaven: "Golden Heaven"
         }
     };
 
+    let currentLang = localStorage.getItem('clumsy_lang') || 'tr';
+
     function t(key, params = {}) {
-        let text = translations['tr'][key] || key;
+        let text = (translations[currentLang] && translations[currentLang][key]) ? translations[currentLang][key] : (translations['tr'][key] || key);
         for (let p in params) {
             text = text.replace(`{${p}}`, params[p]);
         }
         return text;
     }
 
+    function setLanguage(lang) {
+        currentLang = lang;
+        localStorage.setItem('clumsy_lang', lang);
+        if(lang === 'en') {
+            document.getElementById('lang-en').classList.add('active');
+            document.getElementById('lang-tr').classList.remove('active');
+        } else {
+            document.getElementById('lang-tr').classList.add('active');
+            document.getElementById('lang-en').classList.remove('active');
+        }
+        updateLanguageUI();
+    }
+
     function updateLanguageUI() {
-        document.getElementById('menu-main-title').innerText = t('menuTitle');
-        document.getElementById('btn-flappy').innerText = t('btnFlappy');
-        document.getElementById('btn-soon').innerText = t('btnSoon');
         document.getElementById('score-text-label').innerText = t('scoreLbl');
         document.getElementById('tab-chars-lbl').innerText = t('charsTab');
         document.getElementById('tab-bgs-lbl').innerText = t('bgsTab');
@@ -691,10 +730,11 @@
         document.getElementById('pow-magnet-title').innerText = t('magnetTitle');
         document.getElementById('pow-magnet-desc').innerText = t('magnetDesc');
         document.getElementById('pipe-color-lbl').innerText = t('pipeColorLbl');
-        document.getElementById('settings-title-lbl').innerText = t('settingsTitle');
-        document.getElementById('sfx-lbl').innerText = t('sfxLbl');
-        document.getElementById('bgmLbl').innerText = t('bgmLbl');
-        document.getElementById('in-game-menu-btn').innerText = t('menuBackBtn');
+        
+        document.getElementById('settings-title').innerText = t('settingsTitle');
+        document.getElementById('lang-label').innerText = t('langLabel');
+        document.getElementById('sfx-label').innerText = t('sfxLabel');
+        document.getElementById('bgm-label').innerText = t('bgmLabel');
 
         if (gameState === 'START') {
             document.getElementById('overlay-title').innerText = t('flappyStartTitle');
@@ -704,9 +744,11 @@
             startBtn.innerText = t('restartBtn');
             updateGameOverOverlayText();
         }
+        renderCharMenu();
+        renderBgMenu();
+        renderTrailMenu();
     }
 
-    const mainMenu = document.getElementById('main-menu');
     const gameContainer = document.getElementById('game-container');
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
@@ -716,17 +758,13 @@
     const totalCoinsDisplay = document.getElementById('total-coins-display');
     const totalScoreDisplay = document.getElementById('total-score-display');
 
+    const settingsToggle = document.getElementById('settings-toggle');
+    const settingsModal = document.getElementById('settings-modal');
     const shopToggle = document.getElementById('shop-toggle');
     const shopModal = document.getElementById('shop-modal');
     const pipeToggle = document.getElementById('pipe-toggle');
     const pipeDropdown = document.getElementById('pipe-dropdown');
     const pipePreview = document.getElementById('pipe-preview');
-    const mainSettingsToggle = document.getElementById('main-settings-toggle');
-    const settingsDropdown = document.getElementById('settings-dropdown');
-    const sfxVolumeSlider = document.getElementById('sfx-volume');
-    const bgmVolumeSlider = document.getElementById('bgm-volume');
-    const sfxValLabel = document.getElementById('sfx-val');
-    const bgmValLabel = document.getElementById('bgm-val');
 
     let totalCoins = parseInt(localStorage.getItem('clumsy_coins')) || 0;
     let totalScoreWallet = parseInt(localStorage.getItem('clumsy_total_score_wallet')) || 0;
@@ -737,13 +775,25 @@
     let ownedPowers = JSON.parse(localStorage.getItem('clumsy_owned_powers')) || { double: 0, magnet: 0 };
     let selectedPrepPowers = { double: false, magnet: false };
 
-    let sfxVolume = localStorage.getItem('clumsy_sfx_volume') !== null ? parseFloat(localStorage.getItem('clumsy_sfx_volume')) : 1.0;
-    let bgmVolume = localStorage.getItem('clumsy_bgm_volume') !== null ? parseFloat(localStorage.getItem('clumsy_bgm_volume')) : 0.5;
+    let sfxVolume = parseFloat(localStorage.getItem('clumsy_sfx')) ?? 1.0;
+    let bgmVolume = parseFloat(localStorage.getItem('clumsy_bgm')) ?? 0.5;
+    
+    document.getElementById('sfx-slider').value = Math.round(sfxVolume * 100);
+    document.getElementById('sfx-val').innerText = Math.round(sfxVolume * 100) + '%';
+    document.getElementById('bgm-slider').value = Math.round(bgmVolume * 100);
+    document.getElementById('bgm-val').innerText = Math.round(bgmVolume * 100) + '%';
 
-    sfxVolumeSlider.value = Math.round(sfxVolume * 100);
-    sfxValLabel.innerText = sfxVolumeSlider.value;
-    bgmVolumeSlider.value = Math.round(bgmVolume * 100);
-    bgmValLabel.innerText = bgmVolumeSlider.value;
+    function updateSfxVolume(val) {
+        sfxVolume = val / 100;
+        localStorage.setItem('clumsy_sfx', sfxVolume);
+        document.getElementById('sfx-val').innerText = val + '%';
+    }
+
+    function updateBgmVolume(val) {
+        bgmVolume = val / 100;
+        localStorage.setItem('clumsy_bgm', bgmVolume);
+        document.getElementById('bgm-val').innerText = val + '%';
+    }
 
     let audioCtx = null;
 
@@ -825,40 +875,17 @@
         if (bgmTimer) { clearInterval(bgmTimer); bgmTimer = null; }
     }
 
-    sfxVolumeSlider.oninput = (e) => { 
-        sfxVolume = e.target.value / 100; 
-        sfxValLabel.innerText = e.target.value; 
-        localStorage.setItem('clumsy_sfx_volume', sfxVolume);
-    };
-    bgmVolumeSlider.oninput = (e) => { 
-        bgmVolume = e.target.value / 100; 
-        bgmValLabel.innerText = e.target.value; 
-        localStorage.setItem('clumsy_bgm_volume', bgmVolume);
-    };
-
     window.addEventListener('click', (e) => {
+        if (!settingsModal.contains(e.target) && !settingsToggle.contains(e.target) && settingsModal.classList.contains('active')) {
+            settingsModal.classList.remove('active');
+        }
         if (!shopModal.contains(e.target) && !shopToggle.contains(e.target) && shopModal.classList.contains('active')) {
             shopModal.classList.remove('active');
         }
         if (!pipeDropdown.contains(e.target) && !pipeToggle.contains(e.target) && pipeDropdown.classList.contains('active')) {
             pipeDropdown.classList.remove('active');
         }
-        if (!settingsDropdown.contains(e.target) && (!mainSettingsToggle || !mainSettingsToggle.contains(e.target)) && settingsDropdown.classList.contains('active')) {
-            settingsDropdown.classList.remove('active');
-        }
     });
-
-    mainSettingsToggle.onclick = (e) => { e.stopPropagation(); settingsDropdown.classList.toggle('active'); };
-
-    function returnToMainMenu() {
-        stopBGM();
-        resetAllPowers();
-        settingsDropdown.classList.remove('active');
-        shopModal.classList.remove('active');
-        pipeDropdown.classList.remove('active');
-        gameContainer.style.display = 'none';
-        mainMenu.style.display = 'block';
-    }
 
     const baseEmojis = ['🐤','🐦','🐝','🐱','🦇','👻','👽','✈️','🐉','🚀','🐶','🦊','🐼','🐨','🦁','🐯','🦄','🦖','🐙','🐳','🐬','🐧','🦉','🦋','🐢','🦀','⚡','🔥','💎','🍀','🍎','🍔','🍕','⚽','🏀','🎾','🎲','🎯','🔮','🧸','⭐','🌙','☀️','🌈','⛄','⚡','👑','💎','🏆'];
     const characters = [];
@@ -871,34 +898,34 @@
     }
 
     const backgrounds = [
-        { id: 'classic_sky', name: 'Klasik Gökyüzü', price: 0, top: '#4a90e2', mid: '#50e3c2', bottom: '#b8e994', isNight: false, hasStars: false },
-        { id: 'midnight_dark', name: 'Gece Yarısı', price: 20, top: '#0d1b2a', mid: '#1b263b', bottom: '#415a77', isNight: true, hasStars: true },
-        { id: 'sunset_glow', name: 'Gün Batımı', price: 35, top: '#ff5e62', mid: '#ff9966', bottom: '#ffcc33', isNight: false, hasStars: false },
-        { id: 'cyberpunk_city', name: 'Siberpunk', price: 50, top: '#2b0548', mid: '#791a8a', bottom: '#ff007f', isNight: true, hasStars: true },
-        { id: 'deep_space', name: 'Derin Uzay', price: 75, top: '#000000', mid: '#0a001f', bottom: '#150036', isNight: true, hasStars: true },
-        { id: 'candy_land', name: 'Şeker Diyarı', price: 90, top: '#ff758c', mid: '#ff7eb3', bottom: '#ffb199', isNight: false, hasStars: false },
-        { id: 'matrix_green', name: 'Matris', price: 110, top: '#051923', mid: '#006400', bottom: '#002800', isNight: true, hasStars: false },
-        { id: 'desert_sand', name: 'Çöl Kumları', price: 130, top: '#d38312', mid: '#a83279', bottom: '#ff4e50', isNight: false, hasStars: false },
-        { id: 'arctic_frost', name: 'Kutup Buzulu', price: 150, top: '#2980b9', mid: '#6dd5fa', bottom: '#ffffff', isNight: false, hasStars: false },
-        { id: 'volcano_fire', name: 'Volkan Ateşi', price: 180, top: '#cb356b', mid: '#bd3f32', bottom: '#3a1c71', isNight: true, hasStars: false },
-        { id: 'neon_synth', name: 'Neon Synth', price: 210, top: '#1a0033', mid: '#660066', bottom: '#ff00cc', isNight: true, hasStars: true },
-        { id: 'autumn_forest', name: 'Sonbahar Ormanı', price: 250, top: '#d97706', mid: '#b45309', bottom: '#78350f', isNight: false, hasStars: false },
-        { id: 'royal_purple', name: 'Kraliyet Moru', price: 300, top: '#31103f', mid: '#5c1d75', bottom: '#9b59b6', isNight: true, hasStars: true },
-        { id: 'abyss_ocean', name: 'Okyanus Dip', price: 350, top: '#03001e', mid: '#7303c0', bottom: '#ec38bc', isNight: true, hasStars: false },
-        { id: 'golden_heaven', name: 'Altın Cennet', price: 500, top: '#f39c12', mid: '#f1c40f', bottom: '#d4ac0d', isNight: false, hasStars: false }
+        { id: 'classic_sky', price: 0, top: '#4a90e2', mid: '#50e3c2', bottom: '#b8e994', isNight: false, hasStars: false },
+        { id: 'midnight_dark', price: 20, top: '#0d1b2a', mid: '#1b263b', bottom: '#415a77', isNight: true, hasStars: true },
+        { id: 'sunset_glow', price: 35, top: '#ff5e62', mid: '#ff9966', bottom: '#ffcc33', isNight: false, hasStars: false },
+        { id: 'cyberpunk_city', price: 50, top: '#2b0548', mid: '#791a8a', bottom: '#ff007f', isNight: true, hasStars: true },
+        { id: 'deep_space', price: 75, top: '#000000', mid: '#0a001f', bottom: '#150036', isNight: true, hasStars: true },
+        { id: 'candy_land', price: 90, top: '#ff758c', mid: '#ff7eb3', bottom: '#ffb199', isNight: false, hasStars: false },
+        { id: 'matrix_green', price: 110, top: '#051923', mid: '#006400', bottom: '#002800', isNight: true, hasStars: false },
+        { id: 'desert_sand', price: 130, top: '#d38312', mid: '#a83279', bottom: '#ff4e50', isNight: false, hasStars: false },
+        { id: 'arctic_frost', price: 150, top: '#2980b9', mid: '#6dd5fa', bottom: '#ffffff', isNight: false, hasStars: false },
+        { id: 'volcano_fire', price: 180, top: '#cb356b', mid: '#bd3f32', bottom: '#3a1c71', isNight: true, hasStars: false },
+        { id: 'neon_synth', price: 210, top: '#1a0033', mid: '#660066', bottom: '#ff00cc', isNight: true, hasStars: true },
+        { id: 'autumn_forest', price: 250, top: '#d97706', mid: '#b45309', bottom: '#78350f', isNight: false, hasStars: false },
+        { id: 'royal_purple', price: 300, top: '#31103f', mid: '#5c1d75', bottom: '#9b59b6', isNight: true, hasStars: true },
+        { id: 'abyss_ocean', price: 350, top: '#03001e', mid: '#7303c0', bottom: '#ec38bc', isNight: true, hasStars: false },
+        { id: 'golden_heaven', price: 500, top: '#f39c12', mid: '#f1c40f', bottom: '#d4ac0d', isNight: false, hasStars: false }
     ];
     let selectedBg = backgrounds[0];
 
     const trails = [
-        { id: 'none', name: 'İz Yok', price: 0, type: 'none' },
-        { id: 'trail_blue', name: 'Mavi İz', price: 25, type: 'solid', color: '#3498db' },
-        { id: 'trail_green', name: 'Yeşil İz', price: 25, type: 'solid', color: '#2ecc71' },
-        { id: 'trail_red', name: 'Kırmızı İz', price: 25, type: 'solid', color: '#e74c3c' },
-        { id: 'trail_yellow', name: 'Sarı İz', price: 25, type: 'solid', color: '#f1c40f' },
-        { id: 'trail_purple', name: 'Mor İz', price: 25, type: 'solid', color: '#9b59b6' },
-        { id: 'trail_pink', name: 'Pembe İz', price: 25, type: 'solid', color: '#ff6b81' },
-        { id: 'trail_rainbow', name: 'Gökkuşağı', price: 50, type: 'rainbow' },
-        { id: 'trail_fire', name: 'Ateş Parçaları', price: 60, type: 'fire' }
+        { id: 'none', price: 0, type: 'none', styleStr: 'background: rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:14px;', text: '❌' },
+        { id: 'trail_blue', price: 25, type: 'solid', color: '#3498db', styleStr: 'background: #3498db;' },
+        { id: 'trail_green', price: 25, type: 'solid', color: '#2ecc71', styleStr: 'background: #2ecc71;' },
+        { id: 'trail_red', price: 25, type: 'solid', color: '#e74c3c', styleStr: 'background: #e74c3c;' },
+        { id: 'trail_yellow', price: 25, type: 'solid', color: '#f1c40f', styleStr: 'background: #f1c40f;' },
+        { id: 'trail_purple', price: 25, type: 'solid', color: '#9b59b6', styleStr: 'background: #9b59b6;' },
+        { id: 'trail_pink', price: 25, type: 'solid', color: '#ff6b81', styleStr: 'background: #ff6b81;' },
+        { id: 'trail_rainbow', price: 50, type: 'rainbow', styleStr: 'background: linear-gradient(135deg, red, orange, yellow, green, blue, purple);' },
+        { id: 'trail_fire', price: 60, type: 'fire', styleStr: 'background: linear-gradient(135deg, #e74c3c, #f39c12);' }
     ];
     let selectedTrail = trails[0];
     let trailParticles = [];
@@ -957,7 +984,7 @@
         ['double', 'magnet'].forEach(type => {
             const el = document.getElementById(`prep-${type}`);
             let count = ownedPowers[type];
-            let nameLbl = type === 'double' ? '2x' : 'Mıknatıs';
+            let nameLbl = type === 'double' ? '2x' : 'Magnet';
             let symbol = type === 'double' ? '✨' : '🧲';
             el.innerText = `${symbol} ${nameLbl} (${count})`;
             if (selectedPrepPowers[type]) {
@@ -987,8 +1014,9 @@
         }
     }
 
-    shopToggle.onclick = (e) => { e.stopPropagation(); shopModal.classList.toggle('active'); pipeDropdown.classList.remove('active'); settingsDropdown.classList.remove('active'); };
-    pipeToggle.onclick = (e) => { e.stopPropagation(); pipeDropdown.classList.toggle('active'); shopModal.classList.remove('active'); settingsDropdown.classList.remove('active'); };
+    settingsToggle.onclick = (e) => { e.stopPropagation(); settingsModal.classList.toggle('active'); shopModal.classList.remove('active'); pipeDropdown.classList.remove('active'); };
+    shopToggle.onclick = (e) => { e.stopPropagation(); shopModal.classList.toggle('active'); settingsModal.classList.remove('active'); pipeDropdown.classList.remove('active'); };
+    pipeToggle.onclick = (e) => { e.stopPropagation(); pipeDropdown.classList.toggle('active'); settingsModal.classList.remove('active'); shopModal.classList.remove('active'); };
 
     function switchShopTab(tabName) {
         document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
@@ -1062,7 +1090,7 @@
             const isUnlocked = unlockedChars.includes(char.id);
             const card = document.createElement('div');
             card.className = `char-card ${isUnlocked ? '' : 'locked'} ${selectedChar.id === char.id ? 'active' : ''}`;
-            card.innerHTML = `<div class="emoji" style="${char.flip ? 'transform: scaleX(-1);' : ''}">${char.emoji}</div><div class="cost">${isUnlocked ? t('unlockedText') : char.price + '🪙'}</div>`;
+            card.innerHTML = `<div class="emoji" style="${char.flip ? 'transform: scaleX(-1);' : ''}">${char.emoji}</div><div class="cost">${isUnlocked ? 'Unlocked' : char.price + '🪙'}</div>`;
             card.onclick = (e) => {
                 e.stopPropagation();
                 if (isUnlocked) { selectedChar = char; renderCharMenu(); }
@@ -1084,7 +1112,7 @@
             const isUnlocked = unlockedBgs.includes(bg.id);
             const card = document.createElement('div');
             card.className = `bg-card ${isUnlocked ? '' : 'locked'} ${selectedBg.id === bg.id ? 'active' : ''}`;
-            card.innerHTML = `<div class="bg-preview" style="background: linear-gradient(to bottom, ${bg.top}, ${bg.bottom});"></div><div class="name">${bg.name}</div><div class="cost">${isUnlocked ? t('unlockedText') : bg.price + '🪙'}</div>`;
+            card.innerHTML = `<div class="bg-preview" style="background: linear-gradient(to bottom, ${bg.top}, ${bg.bottom});"></div><div class="name">${t('bg_' + bg.id)}</div><div class="cost">${isUnlocked ? 'Unlocked' : bg.price + '🪙'}</div>`;
             card.onclick = (e) => {
                 e.stopPropagation();
                 if (isUnlocked) { selectedBg = bg; renderBgMenu(); }
@@ -1106,7 +1134,7 @@
             const isUnlocked = unlockedTrails.includes(trail.id);
             const card = document.createElement('div');
             card.className = `trail-card ${isUnlocked ? '' : 'locked'} ${selectedTrail.id === trail.id ? 'active' : ''}`;
-            card.innerHTML = `<div class="name">${trail.name}</div><div class="cost">${isUnlocked ? t('unlockedText') : trail.price + '🪙'}</div>`;
+            card.innerHTML = `<div class="trail-preview-dot" style="${trail.styleStr}">${trail.text || ''}</div><div class="cost">${isUnlocked ? 'Unlocked' : trail.price + '🪙'}</div>`;
             card.onclick = (e) => {
                 e.stopPropagation();
                 if (isUnlocked) { selectedTrail = trail; renderTrailMenu(); }
@@ -1141,20 +1169,12 @@
             };
             colorGrid.appendChild(btn);
         });
+        
+        document.getElementById('lang-tr').classList.toggle('active', currentLang === 'tr');
+        document.getElementById('lang-en').classList.toggle('active', currentLang === 'en');
+
         updateLanguageUI();
         updateHUD();
-    }
-
-    function startClumsyBirdGame() {
-        mainMenu.style.display = 'none';
-        gameContainer.style.display = 'block';
-        shopToggle.style.display = 'flex';
-        pipeToggle.style.display = 'flex';
-        document.getElementById('coin-counter-hud').style.display = 'flex';
-        document.getElementById('active-powers-hud').style.display = 'flex';
-        initMenus();
-        resetGameToStart();
-        startBGM();
     }
 
     function resetGameToStart() {
@@ -1165,6 +1185,7 @@
         overlayTitle.innerText = t('flappyStartTitle');
         startBtn.innerText = t('startBtn');
         startBtn.style.display = 'inline-block';
+        settingsToggle.style.display = 'flex';
         shopToggle.style.display = 'flex';
         pipeToggle.style.display = 'flex';
         document.getElementById('prep-power-selector').style.display = 'flex';
@@ -1175,9 +1196,10 @@
 
     function beginActualGame() {
         initAudioContext();
+        settingsModal.classList.remove('active');
         shopModal.classList.remove('active');
         pipeDropdown.classList.remove('active');
-        settingsDropdown.classList.remove('active');
+        settingsToggle.style.display = 'none';
         shopToggle.style.display = 'none';
         pipeToggle.style.display = 'none';
         document.getElementById('prep-power-selector').style.display = 'none';
@@ -1200,11 +1222,9 @@
     }
 
     window.addEventListener('keydown', (e) => {
-        if (gameContainer.style.display === 'block') {
-            if (e.code === 'Space') {
-                if (gameState === 'PLAYING') jump();
-                else if (gameState === 'GAMEOVER') resetGameToStart();
-            }
+        if (e.code === 'Space') {
+            if (gameState === 'PLAYING') jump();
+            else if (gameState === 'GAMEOVER') resetGameToStart();
         }
     });
 
@@ -1448,6 +1468,7 @@
         overlayTitle.innerText = t('scoreLbl') + ": " + score;
         startBtn.innerText = t('restartBtn');
         startBtn.style.display = 'inline-block';
+        settingsToggle.style.display = 'flex';
         shopToggle.style.display = 'flex';
         pipeToggle.style.display = 'flex';
         playSound('hit');
@@ -1457,13 +1478,13 @@
     }
 
     function loop() {
-        if (gameContainer.style.display === 'block') {
-            update();
-            draw();
-        }
+        update();
+        draw();
         requestAnimationFrame(loop);
     }
 
+    initMenus();
+    resetGameToStart();
     loop();
 </script>
 </body>
