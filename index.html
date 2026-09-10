@@ -632,7 +632,6 @@
             langLabel: "Dil / Language",
             sfxLabel: "Efekt Sesi (SFX)",
             bgmLabel: "Müzik Sesi (BGM)",
-            // Arka Plan İsimleri (TR)
             bg_classic_sky: "Klasik Gökyüzü",
             bg_midnight_dark: "Gece Yarısı",
             bg_sunset_glow: "Gün Batımı",
@@ -677,7 +676,6 @@
             langLabel: "Language / Dil",
             sfxLabel: "SFX Volume",
             bgmLabel: "BGM Volume",
-            // Arka Plan İsimleri (EN)
             bg_classic_sky: "Classic Sky",
             bg_midnight_dark: "Midnight Dark",
             bg_sunset_glow: "Sunset Glow",
@@ -1277,8 +1275,12 @@
             let maxHeight = canvas.height - 40 - gap - minHeight;
             let topHeight = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
             pipes.push({ x: canvas.width, top: topHeight, bottom: canvas.height - 40 - (topHeight + gap), passed: false });
-            if (Math.random() < 0.6) {
-                coins.push({ x: canvas.width + 25, y: topHeight + gap / 2, size: 12, collected: false });
+            
+            // Rastgele altın üretimi (boruların içinde değil, 4-5 piksel veya daha uzağa yerleştirilmiş)
+            if (Math.random() < 0.7) {
+                let coinX = canvas.width + 55 + Math.random() * 80;
+                let coinY = Math.random() * (canvas.height - 120) + 60;
+                coins.push({ x: coinX, y: coinY, size: 12, collected: false });
             }
         }
 
