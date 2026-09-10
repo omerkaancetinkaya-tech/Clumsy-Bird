@@ -1274,12 +1274,14 @@
             let gap = 160.5, minHeight = 40;
             let maxHeight = canvas.height - 40 - gap - minHeight;
             let topHeight = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
+            let pipeWidth = 52;
+
             pipes.push({ x: canvas.width, top: topHeight, bottom: canvas.height - 40 - (topHeight + gap), passed: false });
             
-            // Rastgele altın üretimi (boruların içinde değil, 4-5 piksel veya daha uzağa yerleştirilmiş)
-            if (Math.random() < 0.7) {
-                let coinX = canvas.width + 55 + Math.random() * 80;
-                let coinY = Math.random() * (canvas.height - 120) + 60;
+            if (Math.random() < 0.6) {
+                // Borunun hemen sağındaki boşluğun tam ortasında çıkacak şekilde konum güncellendi
+                let coinX = canvas.width + 198; 
+                let coinY = topHeight + (gap / 2);
                 coins.push({ x: coinX, y: coinY, size: 12, collected: false });
             }
         }
