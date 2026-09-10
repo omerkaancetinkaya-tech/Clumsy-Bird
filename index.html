@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oyun Platformu & Clumsy Bird</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: #0b0f19;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        /* --- Ana Menü Ekranı --- */
+        #main-menu {
+            position: relative;
+            text-align: center;
+            background: rgba(18, 22, 35, 0.85);
+            backdrop-filter: blur(16px);
+            padding: 45px 35px;
+            border-radius: 24px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 30px rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            width: 380px;
+        }
+
+        #main-menu h1 {
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            letter-spacing: 0.5px;
+        }
+
+        .game-btn {
+            display: block;
+            width: 100%;
+            margin: 14px 0;
+            padding: 15px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.35);
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .game-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.5);
+            background: linear-gradient(135deg, #818cf8, #6366f1);
+        }
+
+        .game-btn.disabled {
+            background: rgba(255, 255, 255, 0.03);
+            color: #555;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .menu-settings-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 38px;
+            height: 38px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+        .menu-settings-btn:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: #818cf8;
+        }
+
+        /* --- Oyun Konteyneri --- */
+        #game-container {
+            display: none;
+            position: relative;
+            width: 400px;
+            height: 600px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.8);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: #0f172a;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        /* --- Sol Üst: KKK Altın ve Puanlar HUD --- */
+        #coin-counter-hud {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(10px);
+            padding: 6px 12px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            font-size: 12px;
+            font-weight: 700;
+            color: #ffd700;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            z-index: 8;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+
+        /* --- Sol Üst Güçler Paneli (Aktif Butonlar) - Puanın Altında --- */
+        #active-powers-hud {
+            position: absolute;
+            top: 75px;
+            left: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 9;
+        }
+        .active-power-slot {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #818cf8;
+            cursor: pointer;
+            text-align: center;
+            backdrop-filter: blur(6px);
+            transition: 0.2s;
+            min-width: 50px;
+        }
+        .active-power-slot.active-timer {
+            background: #10b981;
+            color: #fff;
+            border-color: #34d399;
+            animation: pulse-power 1s infinite alternate;
+        }
+        @keyframes pulse-power {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
+
+        .selector-toggle {
+            position: absolute;
+            top: 15px;
+            width: 40px;
+            height: 40px;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .selector-toggle:hover {
+            transform: scale(1.1);
+            border-color: #818cf8;
+        }
+
+        #shop-toggle { right: 65px; font-size: 18px; display: none; }
+        #pipe-toggle { right: 15px; display: none; }
+
+        .pipe-preview-icon {
+            width: 16px;
+            height: 22px;
+            border-radius: 4px;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            box-shadow: inset 0 0 4px rgba(0,0,0,0.5);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 65px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(16px);
+            padding: 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 25;
+            display: none;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.7);
+            max-height: 400px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #6366f1 rgba(15, 23, 42, 0.8);
+        }
+
+        .dropdown-menu.active { display: block; }
+
+        .menu-title {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            text-align: center;
+            color: #818cf8;
+        }
+
+        /* --- Mağaza Modalı --- */
+        #shop-modal {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 340px;
+            height: 440px;
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 30;
+            display: none;
+            flex-direction: column;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+        #shop-modal.active {
+            transform: translate(-50%, -50%) scale(1);
+            display: flex;
+        }
+
+        .shop-tabs {
+            display: flex;
+            background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .shop-tab {
+            flex: 1;
+            padding: 10px 4px;
+            text-align: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: #888;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .shop-tab.active {
+            color: #818cf8;
+            background: rgba(99, 102, 241, 0.1);
+            border-bottom: 2px solid #818cf8;
+        }
+
+        .shop-content {
+            flex: 1;
+            padding: 14px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #6366f1 rgba(15, 23, 42, 0.8);
+        }
+
+        .shop-pane { display: none; }
+        .shop-pane.active { display: block; }
+
+        .char-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .char-card {
+            position: relative;
+            height: 52px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .char-card .emoji { font-size: 20px; }
+        .char-card .cost { font-size: 8px; color: #ffd700; font-weight: bold; margin-top: 2px; }
+        .char-card.locked { opacity: 0.5; background: rgba(0, 0, 0, 0.4); }
+        .char-card.locked::after { content: '🔒'; position: absolute; top: 2px; right: 2px; font-size: 7px; }
+        .char-card:hover { transform: translateY(-2px); background: rgba(255, 255, 255, 0.08); }
+        .char-card.active { border-color: #818cf8; background: rgba(99, 102, 241, 0.2); box-shadow: 0 0 10px rgba(99, 102, 241, 0.4); }
+
+        .bg-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .bg-card {
+            position: relative;
+            height: 65px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 4px;
+            text-align: center;
+        }
+        .bg-card .bg-preview { width: 100%; height: 30px; border-radius: 6px; margin-bottom: 3px; border: 1px solid rgba(255,255,255,0.2); }
+        .bg-card .name { font-size: 9px; color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+        .bg-card .cost { font-size: 8px; color: #ffd700; font-weight: bold; }
+        .bg-card.locked { opacity: 0.5; background: rgba(0, 0, 0, 0.4); }
+        .bg-card.locked::after { content: '🔒'; position: absolute; top: 4px; right: 4px; font-size: 8px; }
+        .bg-card:hover { transform: translateY(-2px); background: rgba(255, 255, 255, 0.08); }
+        .bg-card.active { border-color: #818cf8; background: rgba(99, 102, 241, 0.2); box-shadow: 0 0 10px rgba(99, 102, 241, 0.4); }
+
+        .trail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .trail-card {
+            position: relative;
+            height: 65px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 6px;
+            text-align: center;
+        }
+        .trail-card .name { font-size: 10px; color: #cbd5e1; font-weight: 600; margin-bottom: 4px; }
+        .trail-card .cost { font-size: 9px; color: #ffd700; font-weight: bold; }
+        .trail-card.locked { opacity: 0.5; background: rgba(0, 0, 0, 0.4); }
+        .trail-card.locked::after { content: '🔒'; position: absolute; top: 4px; right: 4px; font-size: 8px; }
+        .trail-card:hover { transform: translateY(-2px); background: rgba(255, 255, 255, 0.08); }
+        .trail-card.active { border-color: #818cf8; background: rgba(99, 102, 241, 0.2); box-shadow: 0 0 10px rgba(99, 102, 241, 0.4); }
+
+        .power-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .power-info h4 { font-size: 13px; color: #818cf8; margin-bottom: 2px; }
+        .power-info p { font-size: 10px; color: #94a3b8; }
+        .power-btn {
+            background: #10b981;
+            color: #fff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .power-btn:hover { background: #059669; }
+
+        #pipe-dropdown { right: 15px; width: 140px; }
+        .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+
+        .color-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .color-btn:hover { transform: scale(1.15); }
+        .color-btn.active { border-color: #fff; transform: scale(1.1); box-shadow: 0 0 10px rgba(255,255,255,0.8); }
+
+        #settings-dropdown { right: 20px; width: 220px; top: 65px; text-align: left; }
+
+        .setting-item { margin-bottom: 12px; font-size: 12px; }
+        .setting-item label { display: block; margin-bottom: 5px; color: #cbd5e1; font-weight: 500; }
+        .setting-item input[type="range"] { width: 100%; cursor: pointer; accent-color: #6366f1; }
+
+        .menu-back-btn {
+            width: 100%;
+            margin-top: 8px;
+            padding: 8px;
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            text-align: center;
+            transition: 0.2s;
+        }
+        .menu-back-btn:hover {
+            background: rgba(239, 68, 68, 0.35);
+            color: #fff;
+        }
+
+        #game-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(11, 15, 25, 0.85);
+            backdrop-filter: blur(6px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 5;
+            padding: 20px;
+            text-align: center;
+        }
+
+        #game-overlay h1 {
+            font-size: 26px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #fff, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        /* --- Başlangıç Özellik Seçim Alanı --- */
+        #prep-power-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .prep-slot {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: center;
+            color: #94a3b8;
+        }
+        .prep-slot:hover {
+            border-color: #818cf8;
+            background: rgba(99, 102, 241, 0.15);
+            color: #fff;
+        }
+        .prep-slot.selected {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            border-color: #34d399;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+        }
+
+        #start-btn {
+            padding: 12px 32px;
+            font-size: 15px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+            transition: all 0.2s;
+        }
+        #start-btn:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6); }
+        .instructions { margin-top: 15px; font-size: 11px; color: #94a3b8; text-align: center; line-height: 1.5; }
+
+        /* --- Oyun İçi Ana Menüye Dön Butonu --- */
+        #in-game-menu-btn {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 16px;
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            text-align: center;
+            transition: 0.2s;
+            z-index: 12;
+        }
+        #in-game-menu-btn:hover {
+            background: rgba(239, 68, 68, 0.35);
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ana Menü -->
+    <div id="main-menu">
+        <div class="menu-settings-btn" id="main-settings-toggle" title="Ayarlar">⚙️</div>
+        <h1 id="menu-main-title">Oyun Platformu</h1>
+        <button class="game-btn" id="btn-flappy" onclick="startClumsyBirdGame()">1. Clumsy Bird</button>
+        <button class="game-btn disabled" id="btn-soon">2. Yakında...</button>
+        
+        <div id="settings-dropdown" class="dropdown-menu">
+            <div class="menu-title" id="settings-title-lbl">Ayarlar</div>
+            <div class="setting-item">
+                <label><span id="sfx-lbl">Ses Efektleri</span>: <span id="sfx-val">100</span>%</label>
+                <input type="range" id="sfx-volume" min="0" max="100" value="100">
+            </div>
+            <div class="setting-item">
+                <label><span id="bgm-lbl">Arka Plan Müziği</span>: <span id="bgm-val">50</span>%</label>
+                <input type="range" id="bgm-volume" min="0" max="100" value="50">
+            </div>
+        </div>
+    </div>
+
+    <!-- Oyun Konteyneri -->
+    <div id="game-container">
+        <!-- KKK Altın ve Puanlar HUD (Sol Üst) -->
+        <div id="coin-counter-hud">
+            <span>🪙 <span id="total-coins-display">0</span></span>
+            <span>⭐ <span id="score-text-label">Puan</span>: <span id="total-score-display">0</span></span>
+        </div>
+
+        <!-- Sol üstte güç slotları (oyun içi aktiflik göstergesi) -->
+        <div id="active-powers-hud">
+            <div id="slot-double" class="active-power-slot">✨ 0x</div>
+            <div id="slot-magnet" class="active-power-slot">🧲 0x</div>
+        </div>
+
+        <div id="shop-toggle" class="selector-toggle" title="Mağaza">🛍️</div>
+
+        <div id="shop-modal">
+            <div class="shop-tabs">
+                <div class="shop-tab active" id="tab-chars-lbl" onclick="switchShopTab('chars')">Karakterler</div>
+                <div class="shop-tab" id="tab-bgs-lbl" onclick="switchShopTab('bgs')">Arka Plan</div>
+                <div class="shop-tab" id="tab-trails-lbl" onclick="switchShopTab('trails')">İzler</div>
+                <div class="shop-tab" id="tab-powers-lbl" onclick="switchShopTab('powers')">Güçler</div>
+            </div>
+            <div class="shop-content">
+                <div id="pane-chars" class="shop-pane active">
+                    <div class="char-grid" id="char-grid"></div>
+                </div>
+                <div id="pane-bgs" class="shop-pane">
+                    <div class="bg-grid" id="bg-grid"></div>
+                </div>
+                <div id="pane-trails" class="shop-pane">
+                    <div class="trail-grid" id="trail-grid"></div>
+                </div>
+                <div id="pane-powers" class="shop-pane">
+                    <div class="power-card">
+                        <div class="power-info">
+                            <h4 id="pow-double-title">Çift Altın (2x)</h4>
+                            <p id="pow-double-desc">Altınları 2 kat yapar (30sn süre).</p>
+                        </div>
+                        <button class="power-btn" onclick="buyPower('double', 100)">100 Puan</button>
+                    </div>
+                    <div class="power-card">
+                        <div class="power-info">
+                            <h4 id="pow-magnet-title">Mıknatıs (Magnet)</h4>
+                            <p id="pow-magnet-desc">Altınları çeker (30sn süre).</p>
+                        </div>
+                        <button class="power-btn" onclick="buyPower('magnet', 75)">75 Puan</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="pipe-toggle" class="selector-toggle">
+            <div id="pipe-preview" class="pipe-preview-icon" style="background-color: #2ecc71;"></div>
+        </div>
+        <div id="pipe-dropdown" class="dropdown-menu">
+            <div class="menu-title" id="pipe-color-lbl">Boru Rengi</div>
+            <div class="color-grid" id="color-grid"></div>
+        </div>
+
+        <div id="game-overlay">
+            <h1 id="overlay-title">CLUMSY BIRD</h1>
+            
+            <!-- Başlangıç Özellik Seçim Alanı -->
+            <div id="prep-power-selector">
+                <div id="prep-double" class="prep-slot" onclick="togglePrepPower('double')">✨ 2x (0)</div>
+                <div id="prep-magnet" class="prep-slot" onclick="togglePrepPower('magnet')">🧲 Mıknatıs (0)</div>
+            </div>
+
+            <button id="start-btn">BAŞLA</button>
+            <div class="instructions" id="overlay-instructions">Zıplamak için Tıkla / Space<br>İstediğin özellikleri seçip Başla butonuna basabilirsin!</div>
+        </div>
+
+        <canvas id="canvas" width="400" height="600"></canvas>
+
+        <!-- Oyun İçindeyken En Alt Ortada Ana Menüye Dön Butonu -->
+        <button id="in-game-menu-btn" onclick="returnToMainMenu()">Ana Menüye Dön</button>
+    </div>
+
+<script>
+    const translations = {
+        tr: {
+            menuTitle: "Oyun Platformu",
+            btnFlappy: "1. Clumsy Bird",
+            btnSoon: "2. Yakında...",
+            scoreLbl: "Puan",
+            charsTab: "Karakter",
+            bgsTab: "Arka Plan",
+            trailsTab: "İzler",
+            powersTab: "Güçler",
+            doubleTitle: "Çift Altın (2x)",
+            doubleDesc: "Toplanan altınları 2 kat yapar.",
+            magnetTitle: "Mıknatıs (Magnet)",
+            magnetDesc: "Altınları otomatik çeker.",
+            pipeColorLbl: "Boru Rengi",
+            settingsTitle: "Ayarlar",
+            sfxLbl: "Ses Efektleri",
+            bgmLbl: "Arka Plan Müziği",
+            menuBackBtn: "Ana Menüye Dön",
+            flappyStartTitle: "CLUMSY BIRD",
+            startBtn: "BAŞLA",
+            restartBtn: "Yeniden Başla",
+            flappyInstructions: "Zıplamak için Tıkla / Space<br>İstediğin özellikleri seçip Başla butonuna basabilirsin!",
+            unlockedText: "Açık",
+            insufficientCoins: "❌ Yetersiz Altın!",
+            insufficientPoints: "❌ Yetersiz Puan!",
+            doubleActive: "✨ Çift Altın Aktif!",
+            magnetActive: "🧲 Mıknatıs Aktif!",
+            bonusReward: "🎉 +{val} ALTIN ÖDÜL!",
+            scoreText: "Puan",
+            highScoreText: "Rekor",
+            earnedThisRound: "Bu El Kazanılan"
+        }
+    };
+
+    function t(key, params = {}) {
+        let text = translations['tr'][key] || key;
+        for (let p in params) {
+            text = text.replace(`{${p}}`, params[p]);
+        }
+        return text;
+    }
+
+    function updateLanguageUI() {
+        document.getElementById('menu-main-title').innerText = t('menuTitle');
+        document.getElementById('btn-flappy').innerText = t('btnFlappy');
+        document.getElementById('btn-soon').innerText = t('btnSoon');
+        document.getElementById('score-text-label').innerText = t('scoreLbl');
+        document.getElementById('tab-chars-lbl').innerText = t('charsTab');
+        document.getElementById('tab-bgs-lbl').innerText = t('bgsTab');
+        document.getElementById('tab-trails-lbl').innerText = t('trailsTab');
+        document.getElementById('tab-powers-lbl').innerText = t('powersTab');
+        document.getElementById('pow-double-title').innerText = t('doubleTitle');
+        document.getElementById('pow-double-desc').innerText = t('doubleDesc');
+        document.getElementById('pow-magnet-title').innerText = t('magnetTitle');
+        document.getElementById('pow-magnet-desc').innerText = t('magnetDesc');
+        document.getElementById('pipe-color-lbl').innerText = t('pipeColorLbl');
+        document.getElementById('settings-title-lbl').innerText = t('settingsTitle');
+        document.getElementById('sfx-lbl').innerText = t('sfxLbl');
+        document.getElementById('bgmLbl').innerText = t('bgmLbl');
+        document.getElementById('in-game-menu-btn').innerText = t('menuBackBtn');
+
+        if (gameState === 'START') {
+            document.getElementById('overlay-title').innerText = t('flappyStartTitle');
+            startBtn.innerText = t('startBtn');
+            document.getElementById('overlay-instructions').innerHTML = t('flappyInstructions');
+        } else if (gameState === 'GAMEOVER') {
+            startBtn.innerText = t('restartBtn');
+            updateGameOverOverlayText();
+        }
+    }
+
+    const mainMenu = document.getElementById('main-menu');
+    const gameContainer = document.getElementById('game-container');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const overlay = document.getElementById('game-overlay');
+    const overlayTitle = document.getElementById('overlay-title');
+    const startBtn = document.getElementById('start-btn');
+    const totalCoinsDisplay = document.getElementById('total-coins-display');
+    const totalScoreDisplay = document.getElementById('total-score-display');
+
+    const shopToggle = document.getElementById('shop-toggle');
+    const shopModal = document.getElementById('shop-modal');
+    const pipeToggle = document.getElementById('pipe-toggle');
+    const pipeDropdown = document.getElementById('pipe-dropdown');
+    const pipePreview = document.getElementById('pipe-preview');
+    const mainSettingsToggle = document.getElementById('main-settings-toggle');
+    const settingsDropdown = document.getElementById('settings-dropdown');
+    const sfxVolumeSlider = document.getElementById('sfx-volume');
+    const bgmVolumeSlider = document.getElementById('bgm-volume');
+    const sfxValLabel = document.getElementById('sfx-val');
+    const bgmValLabel = document.getElementById('bgm-val');
+
+    let totalCoins = parseInt(localStorage.getItem('clumsy_coins')) || 0;
+    let totalScoreWallet = parseInt(localStorage.getItem('clumsy_total_score_wallet')) || 0;
+    let unlockedChars = JSON.parse(localStorage.getItem('clumsy_unlocked')) || ['yellow_bird'];
+    let unlockedBgs = JSON.parse(localStorage.getItem('clumsy_bgs_unlocked')) || ['classic_sky'];
+    let unlockedTrails = JSON.parse(localStorage.getItem('clumsy_trails_unlocked')) || ['none'];
+
+    let ownedPowers = JSON.parse(localStorage.getItem('clumsy_owned_powers')) || { double: 0, magnet: 0 };
+    let selectedPrepPowers = { double: false, magnet: false };
+
+    let sfxVolume = localStorage.getItem('clumsy_sfx_volume') !== null ? parseFloat(localStorage.getItem('clumsy_sfx_volume')) : 1.0;
+    let bgmVolume = localStorage.getItem('clumsy_bgm_volume') !== null ? parseFloat(localStorage.getItem('clumsy_bgm_volume')) : 0.5;
+
+    sfxVolumeSlider.value = Math.round(sfxVolume * 100);
+    sfxValLabel.innerText = sfxVolumeSlider.value;
+    bgmVolumeSlider.value = Math.round(bgmVolume * 100);
+    bgmValLabel.innerText = bgmVolumeSlider.value;
+
+    let audioCtx = null;
+
+    function initAudioContext() {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    function playSound(type) {
+        if (sfxVolume <= 0) return;
+        initAudioContext();
+        if (!audioCtx) return;
+        try {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            let now = audioCtx.currentTime;
+
+            if (type === 'jump') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.exponentialRampToValueAtTime(600, now + 0.1);
+                gain.gain.setValueAtTime(0.3 * sfxVolume, now);
+                gain.gain.linearRampToValueAtTime(0, now + 0.1);
+                osc.start(now); osc.stop(now + 0.1);
+            } else if (type === 'coin') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(900, now);
+                osc.frequency.setValueAtTime(1300, now + 0.08);
+                gain.gain.setValueAtTime(0.2 * sfxVolume, now);
+                gain.gain.linearRampToValueAtTime(0, now + 0.2);
+                osc.start(now); osc.stop(now + 0.2);
+            } else if (type === 'hit') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, now);
+                osc.frequency.linearRampToValueAtTime(40, now + 0.2);
+                gain.gain.setValueAtTime(0.4 * sfxVolume, now);
+                gain.gain.linearRampToValueAtTime(0, now + 0.2);
+                osc.start(now); osc.stop(now + 0.2);
+            } else if (type === 'bonus') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, now);
+                osc.frequency.setValueAtTime(659.25, now + 0.1);
+                osc.frequency.setValueAtTime(783.99, now + 0.2);
+                gain.gain.setValueAtTime(0.3 * sfxVolume, now);
+                gain.gain.linearRampToValueAtTime(0, now + 0.4);
+                osc.start(now); osc.stop(now + 0.4);
+            }
+        } catch (e) {}
+    }
+
+    let bgmTimer = null;
+    let bgmNotes = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63];
+    let noteIndex = 0;
+
+    function startBGM() {
+        if (bgmTimer) return;
+        bgmTimer = setInterval(() => {
+            if (bgmVolume <= 0) return;
+            initAudioContext();
+            if (!audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                let now = audioCtx.currentTime;
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(bgmNotes[noteIndex], now);
+                gain.gain.setValueAtTime(0.05 * bgmVolume, now);
+                gain.gain.linearRampToValueAtTime(0, now + 0.25);
+                osc.start(now); osc.stop(now + 0.25);
+                noteIndex = (noteIndex + 1) % bgmNotes.length;
+            } catch (e) {}
+        }, 300);
+    }
+
+    function stopBGM() {
+        if (bgmTimer) { clearInterval(bgmTimer); bgmTimer = null; }
+    }
+
+    sfxVolumeSlider.oninput = (e) => { 
+        sfxVolume = e.target.value / 100; 
+        sfxValLabel.innerText = e.target.value; 
+        localStorage.setItem('clumsy_sfx_volume', sfxVolume);
+    };
+    bgmVolumeSlider.oninput = (e) => { 
+        bgmVolume = e.target.value / 100; 
+        bgmValLabel.innerText = e.target.value; 
+        localStorage.setItem('clumsy_bgm_volume', bgmVolume);
+    };
+
+    window.addEventListener('click', (e) => {
+        if (!shopModal.contains(e.target) && !shopToggle.contains(e.target) && shopModal.classList.contains('active')) {
+            shopModal.classList.remove('active');
+        }
+        if (!pipeDropdown.contains(e.target) && !pipeToggle.contains(e.target) && pipeDropdown.classList.contains('active')) {
+            pipeDropdown.classList.remove('active');
+        }
+        if (!settingsDropdown.contains(e.target) && (!mainSettingsToggle || !mainSettingsToggle.contains(e.target)) && settingsDropdown.classList.contains('active')) {
+            settingsDropdown.classList.remove('active');
+        }
+    });
+
+    mainSettingsToggle.onclick = (e) => { e.stopPropagation(); settingsDropdown.classList.toggle('active'); };
+
+    function returnToMainMenu() {
+        stopBGM();
+        resetAllPowers();
+        settingsDropdown.classList.remove('active');
+        shopModal.classList.remove('active');
+        pipeDropdown.classList.remove('active');
+        gameContainer.style.display = 'none';
+        mainMenu.style.display = 'block';
+    }
+
+    const baseEmojis = ['🐤','🐦','🐝','🐱','🦇','👻','👽','✈️','🐉','🚀','🐶','🦊','🐼','🐨','🦁','🐯','🦄','🦖','🐙','🐳','🐬','🐧','🦉','🦋','🐢','🦀','⚡','🔥','💎','🍀','🍎','🍔','🍕','⚽','🏀','🎾','🎲','🎯','🔮','🧸','⭐','🌙','☀️','🌈','⛄','⚡','👑','💎','🏆'];
+    const characters = [];
+    for(let i = 0; i < 49; i++) {
+        let id = i === 0 ? 'yellow_bird' : `char_${i}`;
+        let emoji = baseEmojis[i % baseEmojis.length];
+        let flip = i % 2 === 0;
+        let price = i === 0 ? 0 : Math.round(15 + (985 * (i / 48)));
+        characters.push({ id, emoji, price, flip });
+    }
+
+    const backgrounds = [
+        { id: 'classic_sky', name: 'Klasik Gökyüzü', price: 0, top: '#4a90e2', mid: '#50e3c2', bottom: '#b8e994', isNight: false, hasStars: false },
+        { id: 'midnight_dark', name: 'Gece Yarısı', price: 20, top: '#0d1b2a', mid: '#1b263b', bottom: '#415a77', isNight: true, hasStars: true },
+        { id: 'sunset_glow', name: 'Gün Batımı', price: 35, top: '#ff5e62', mid: '#ff9966', bottom: '#ffcc33', isNight: false, hasStars: false },
+        { id: 'cyberpunk_city', name: 'Siberpunk', price: 50, top: '#2b0548', mid: '#791a8a', bottom: '#ff007f', isNight: true, hasStars: true },
+        { id: 'deep_space', name: 'Derin Uzay', price: 75, top: '#000000', mid: '#0a001f', bottom: '#150036', isNight: true, hasStars: true },
+        { id: 'candy_land', name: 'Şeker Diyarı', price: 90, top: '#ff758c', mid: '#ff7eb3', bottom: '#ffb199', isNight: false, hasStars: false },
+        { id: 'matrix_green', name: 'Matris', price: 110, top: '#051923', mid: '#006400', bottom: '#002800', isNight: true, hasStars: false },
+        { id: 'desert_sand', name: 'Çöl Kumları', price: 130, top: '#d38312', mid: '#a83279', bottom: '#ff4e50', isNight: false, hasStars: false },
+        { id: 'arctic_frost', name: 'Kutup Buzulu', price: 150, top: '#2980b9', mid: '#6dd5fa', bottom: '#ffffff', isNight: false, hasStars: false },
+        { id: 'volcano_fire', name: 'Volkan Ateşi', price: 180, top: '#cb356b', mid: '#bd3f32', bottom: '#3a1c71', isNight: true, hasStars: false },
+        { id: 'neon_synth', name: 'Neon Synth', price: 210, top: '#1a0033', mid: '#660066', bottom: '#ff00cc', isNight: true, hasStars: true },
+        { id: 'autumn_forest', name: 'Sonbahar Ormanı', price: 250, top: '#d97706', mid: '#b45309', bottom: '#78350f', isNight: false, hasStars: false },
+        { id: 'royal_purple', name: 'Kraliyet Moru', price: 300, top: '#31103f', mid: '#5c1d75', bottom: '#9b59b6', isNight: true, hasStars: true },
+        { id: 'abyss_ocean', name: 'Okyanus Dip', price: 350, top: '#03001e', mid: '#7303c0', bottom: '#ec38bc', isNight: true, hasStars: false },
+        { id: 'golden_heaven', name: 'Altın Cennet', price: 500, top: '#f39c12', mid: '#f1c40f', bottom: '#d4ac0d', isNight: false, hasStars: false }
+    ];
+    let selectedBg = backgrounds[0];
+
+    const trails = [
+        { id: 'none', name: 'İz Yok', price: 0, type: 'none' },
+        { id: 'trail_blue', name: 'Mavi İz', price: 25, type: 'solid', color: '#3498db' },
+        { id: 'trail_green', name: 'Yeşil İz', price: 25, type: 'solid', color: '#2ecc71' },
+        { id: 'trail_red', name: 'Kırmızı İz', price: 25, type: 'solid', color: '#e74c3c' },
+        { id: 'trail_yellow', name: 'Sarı İz', price: 25, type: 'solid', color: '#f1c40f' },
+        { id: 'trail_purple', name: 'Mor İz', price: 25, type: 'solid', color: '#9b59b6' },
+        { id: 'trail_pink', name: 'Pembe İz', price: 25, type: 'solid', color: '#ff6b81' },
+        { id: 'trail_rainbow', name: 'Gökkuşağı', price: 50, type: 'rainbow' },
+        { id: 'trail_fire', name: 'Ateş Parçaları', price: 60, type: 'fire' }
+    ];
+    let selectedTrail = trails[0];
+    let trailParticles = [];
+
+    const pipeColors = [
+        { id: 'green', main: '#2ecc71', dark: '#27ae60', light: '#58d68d' },
+        { id: 'red', main: '#e74c3c', dark: '#c0392b', light: '#ec7063' },
+        { id: 'yellow', main: '#f1c40f', dark: '#f39c12', light: '#f4d03f' },
+        { id: 'blue', main: '#3498db', dark: '#2980b9', light: '#5dade2' },
+        { id: 'pink', main: '#ff6b81', dark: '#ff4757', light: '#ff8597' },
+        { id: 'purple', main: '#9b59b6', dark: '#8e44ad', light: '#af7ac5' },
+        { id: 'orange', main: '#e67e22', dark: '#d35400', light: '#eb984e' }
+    ];
+
+    let selectedChar = characters[0];
+    let selectedPipeColor = pipeColors[0];
+
+    let powerState = {
+        double: { active: false, timer: 0, interval: null },
+        magnet: { active: false, timer: 0, interval: null }
+    };
+
+    let bird = { x: 80, y: 250, size: 22, gravity: 0.12, lift: -4.2, velocity: 0 };
+    let pipes = [], coins = [], particles = [], floatingTexts = [], stars = [];
+    let sessionCoins = 0, frameCount = 0, score = 0;
+    let highScore = parseInt(localStorage.getItem('clumsy_highscore')) || 0;
+    let gameState = 'START', groundOffset = 0;
+
+    for (let i = 0; i < 30; i++) {
+        stars.push({ x: Math.random() * 400, y: Math.random() * 350, size: Math.random() * 2 + 1, blink: Math.random() * Math.PI });
+    }
+
+    function updateHUD() {
+        totalCoinsDisplay.innerText = totalCoins;
+        totalScoreDisplay.innerText = totalScoreWallet;
+        updatePowerSlotsUI();
+        updatePrepSelectorUI();
+    }
+
+    function updatePowerSlotsUI() {
+        const types = [
+            { id: 'double', symbol: '✨' },
+            { id: 'magnet', symbol: '🧲' }
+        ];
+        
+        types.forEach(p => {
+            const slot = document.getElementById(`slot-${p.id}`);
+            let count = ownedPowers[p.id];
+            if (!powerState[p.id].active) {
+                slot.innerText = `${p.symbol} ${count}x`;
+            }
+        });
+    }
+
+    function updatePrepSelectorUI() {
+        ['double', 'magnet'].forEach(type => {
+            const el = document.getElementById(`prep-${type}`);
+            let count = ownedPowers[type];
+            let nameLbl = type === 'double' ? '2x' : 'Mıknatıs';
+            let symbol = type === 'double' ? '✨' : '🧲';
+            el.innerText = `${symbol} ${nameLbl} (${count})`;
+            if (selectedPrepPowers[type]) {
+                el.classList.add('selected');
+            } else {
+                el.classList.remove('selected');
+            }
+        });
+    }
+
+    function togglePrepPower(type) {
+        if (ownedPowers[type] <= 0) {
+            createFloatingText("❌ Güç Yok!", canvas.width/2, 250, '#e74c3c');
+            return;
+        }
+        selectedPrepPowers[type] = !selectedPrepPowers[type];
+        updatePrepSelectorUI();
+    }
+
+    function createFloatingText(text, x, y, color = '#ffd700') {
+        floatingTexts.push({ text, x, y, alpha: 1, color });
+    }
+
+    function createParticles(x, y, count = 8, color = '#ffd700') {
+        for(let i = 0; i < count; i++) {
+            particles.push({ x, y, vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 6, size: Math.random() * 5 + 2, alpha: 1, color });
+        }
+    }
+
+    shopToggle.onclick = (e) => { e.stopPropagation(); shopModal.classList.toggle('active'); pipeDropdown.classList.remove('active'); settingsDropdown.classList.remove('active'); };
+    pipeToggle.onclick = (e) => { e.stopPropagation(); pipeDropdown.classList.toggle('active'); shopModal.classList.remove('active'); settingsDropdown.classList.remove('active'); };
+
+    function switchShopTab(tabName) {
+        document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.shop-pane').forEach(p => p.classList.remove('active'));
+        if (tabName === 'chars') { document.querySelectorAll('.shop-tab')[0].classList.add('active'); document.getElementById('pane-chars').classList.add('active'); }
+        else if (tabName === 'bgs') { document.querySelectorAll('.shop-tab')[1].classList.add('active'); document.getElementById('pane-bgs').classList.add('active'); }
+        else if (tabName === 'trails') { document.querySelectorAll('.shop-tab')[2].classList.add('active'); document.getElementById('pane-trails').classList.add('active'); }
+        else { document.querySelectorAll('.shop-tab')[3].classList.add('active'); document.getElementById('pane-powers').classList.add('active'); }
+    }
+
+    function buyPower(type, cost) {
+        if (totalScoreWallet >= cost) {
+            totalScoreWallet -= cost;
+            localStorage.setItem('clumsy_total_score_wallet', totalScoreWallet);
+            ownedPowers[type]++;
+            localStorage.setItem('clumsy_owned_powers', JSON.stringify(ownedPowers));
+            updateHUD();
+            createFloatingText("✅ Satın Alındı!", canvas.width/2, 250, '#10b981');
+        } else {
+            createFloatingText(t('insufficientPoints'), canvas.width/2, 250, '#e74c3c');
+        }
+    }
+
+    function triggerPowerFromPrep(type) {
+        if (!selectedPrepPowers[type]) return;
+        if (ownedPowers[type] <= 0) return;
+
+        ownedPowers[type]--;
+        localStorage.setItem('clumsy_owned_powers', JSON.stringify(ownedPowers));
+
+        powerState[type].active = true;
+        powerState[type].timer = 30;
+
+        if (type === 'double') createFloatingText(t('doubleActive'), canvas.width/2, 250, '#ffd700');
+        else if (type === 'magnet') createFloatingText(t('magnetActive'), canvas.width/2, 250, '#e67e22');
+
+        const slot = document.getElementById(`slot-${type}`);
+        slot.classList.add('active-timer');
+
+        powerState[type].interval = setInterval(() => {
+            powerState[type].timer--;
+            if (powerState[type].timer > 0 && powerState[type].active) {
+                slot.innerText = `${powerState[type].timer}s`;
+            } else {
+                stopTimedPower(type);
+            }
+        }, 1000);
+    }
+
+    function stopTimedPower(type) {
+        if (powerState[type].interval) {
+            clearInterval(powerState[type].interval);
+            powerState[type].interval = null;
+        }
+        powerState[type].active = false;
+        const slot = document.getElementById(`slot-${type}`);
+        slot.classList.remove('active-timer');
+        updatePowerSlotsUI();
+    }
+
+    function resetAllPowers() {
+        stopTimedPower('double');
+        stopTimedPower('magnet');
+        updatePowerSlotsUI();
+    }
+
+    function renderCharMenu() {
+        const charGrid = document.getElementById('char-grid');
+        charGrid.innerHTML = '';
+        characters.forEach((char) => {
+            const isUnlocked = unlockedChars.includes(char.id);
+            const card = document.createElement('div');
+            card.className = `char-card ${isUnlocked ? '' : 'locked'} ${selectedChar.id === char.id ? 'active' : ''}`;
+            card.innerHTML = `<div class="emoji" style="${char.flip ? 'transform: scaleX(-1);' : ''}">${char.emoji}</div><div class="cost">${isUnlocked ? t('unlockedText') : char.price + '🪙'}</div>`;
+            card.onclick = (e) => {
+                e.stopPropagation();
+                if (isUnlocked) { selectedChar = char; renderCharMenu(); }
+                else if (totalCoins >= char.price) {
+                    totalCoins -= char.price; unlockedChars.push(char.id); selectedChar = char;
+                    localStorage.setItem('clumsy_coins', totalCoins);
+                    localStorage.setItem('clumsy_unlocked', JSON.stringify(unlockedChars));
+                    updateHUD(); renderCharMenu();
+                } else { createFloatingText(t('insufficientCoins'), canvas.width/2, 250, '#e74c3c'); }
+            };
+            charGrid.appendChild(card);
+        });
+    }
+
+    function renderBgMenu() {
+        const bgGrid = document.getElementById('bg-grid');
+        bgGrid.innerHTML = '';
+        backgrounds.forEach((bg) => {
+            const isUnlocked = unlockedBgs.includes(bg.id);
+            const card = document.createElement('div');
+            card.className = `bg-card ${isUnlocked ? '' : 'locked'} ${selectedBg.id === bg.id ? 'active' : ''}`;
+            card.innerHTML = `<div class="bg-preview" style="background: linear-gradient(to bottom, ${bg.top}, ${bg.bottom});"></div><div class="name">${bg.name}</div><div class="cost">${isUnlocked ? t('unlockedText') : bg.price + '🪙'}</div>`;
+            card.onclick = (e) => {
+                e.stopPropagation();
+                if (isUnlocked) { selectedBg = bg; renderBgMenu(); }
+                else if (totalCoins >= bg.price) {
+                    totalCoins -= bg.price; unlockedBgs.push(bg.id); selectedBg = bg;
+                    localStorage.setItem('clumsy_coins', totalCoins);
+                    localStorage.setItem('clumsy_bgs_unlocked', JSON.stringify(unlockedBgs));
+                    updateHUD(); renderBgMenu();
+                } else { createFloatingText(t('insufficientCoins'), canvas.width/2, 250, '#e74c3c'); }
+            };
+            bgGrid.appendChild(card);
+        });
+    }
+
+    function renderTrailMenu() {
+        const trailGrid = document.getElementById('trail-grid');
+        trailGrid.innerHTML = '';
+        trails.forEach((trail) => {
+            const isUnlocked = unlockedTrails.includes(trail.id);
+            const card = document.createElement('div');
+            card.className = `trail-card ${isUnlocked ? '' : 'locked'} ${selectedTrail.id === trail.id ? 'active' : ''}`;
+            card.innerHTML = `<div class="name">${trail.name}</div><div class="cost">${isUnlocked ? t('unlockedText') : trail.price + '🪙'}</div>`;
+            card.onclick = (e) => {
+                e.stopPropagation();
+                if (isUnlocked) { selectedTrail = trail; renderTrailMenu(); }
+                else if (totalCoins >= trail.price) {
+                    totalCoins -= trail.price; unlockedTrails.push(trail.id); selectedTrail = trail;
+                    localStorage.setItem('clumsy_coins', totalCoins);
+                    localStorage.setItem('clumsy_trails_unlocked', JSON.stringify(unlockedTrails));
+                    updateHUD(); renderTrailMenu();
+                } else { createFloatingText(t('insufficientCoins'), canvas.width/2, 250, '#e74c3c'); }
+            };
+            trailGrid.appendChild(card);
+        });
+    }
+
+    function initMenus() {
+        renderCharMenu();
+        renderBgMenu();
+        renderTrailMenu();
+        const colorGrid = document.getElementById('color-grid');
+        colorGrid.innerHTML = '';
+        pipeColors.forEach((pColor) => {
+            const btn = document.createElement('div');
+            btn.className = `color-btn ${selectedPipeColor.id === pColor.id ? 'active' : ''}`;
+            btn.style.backgroundColor = pColor.main;
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedPipeColor = pColor;
+                pipePreview.style.backgroundColor = pColor.main;
+                pipeDropdown.classList.remove('active');
+            };
+            colorGrid.appendChild(btn);
+        });
+        updateLanguageUI();
+        updateHUD();
+    }
+
+    function startClumsyBirdGame() {
+        mainMenu.style.display = 'none';
+        gameContainer.style.display = 'block';
+        shopToggle.style.display = 'flex';
+        pipeToggle.style.display = 'flex';
+        document.getElementById('coin-counter-hud').style.display = 'flex';
+        document.getElementById('active-powers-hud').style.display = 'flex';
+        initMenus();
+        resetGameToStart();
+        startBGM();
+    }
+
+    function resetGameToStart() {
+        resetAllPowers();
+        bird.y = 250; bird.velocity = 0;
+        pipes = []; coins = []; particles = []; floatingTexts = []; trailParticles = [];
+        frameCount = 0; score = 0; sessionCoins = 0; gameState = 'START';
+        overlayTitle.innerText = t('flappyStartTitle');
+        startBtn.innerText = t('startBtn');
+        startBtn.style.display = 'inline-block';
+        shopToggle.style.display = 'flex';
+        pipeToggle.style.display = 'flex';
+        document.getElementById('prep-power-selector').style.display = 'flex';
+        overlay.querySelector('.instructions').innerHTML = t('flappyInstructions');
+        overlay.style.display = 'flex';
+        updatePrepSelectorUI();
+    }
+
+    function beginActualGame() {
+        initAudioContext();
+        shopModal.classList.remove('active');
+        pipeDropdown.classList.remove('active');
+        settingsDropdown.classList.remove('active');
+        shopToggle.style.display = 'none';
+        pipeToggle.style.display = 'none';
+        document.getElementById('prep-power-selector').style.display = 'none';
+
+        bird.y = 250; bird.velocity = 0;
+        pipes = []; coins = []; particles = []; floatingTexts = []; trailParticles = [];
+        frameCount = 0; score = 0; sessionCoins = 0; gameState = 'PLAYING';
+        overlay.style.display = 'none';
+        startBGM();
+
+        ['double', 'magnet'].forEach(type => {
+            if (selectedPrepPowers[type]) {
+                triggerPowerFromPrep(type);
+            }
+        });
+    }
+
+    function jump() {
+        if (gameState === 'PLAYING') { bird.velocity = bird.lift; playSound('jump'); }
+    }
+
+    window.addEventListener('keydown', (e) => {
+        if (gameContainer.style.display === 'block') {
+            if (e.code === 'Space') {
+                if (gameState === 'PLAYING') jump();
+                else if (gameState === 'GAMEOVER') resetGameToStart();
+            }
+        }
+    });
+
+    canvas.addEventListener('click', () => { if (gameState === 'PLAYING') jump(); });
+    
+    startBtn.onclick = () => {
+        if (gameState === 'START') {
+            beginActualGame();
+        } else if (gameState === 'GAMEOVER') {
+            resetGameToStart();
+        }
+    };
+
+    function update() {
+        if (gameState !== 'PLAYING') return;
+        bird.velocity += bird.gravity;
+        bird.y += bird.velocity;
+        groundOffset = (groundOffset + 1.8) % 20;
+
+        if (selectedTrail.type !== 'none') {
+            let tColor = '#fff', tSize = Math.random() * 5 + 4, tLife = 1.0;
+            if (selectedTrail.type === 'solid') tColor = selectedTrail.color;
+            else if (selectedTrail.type === 'rainbow') {
+                const rc = ['#e74c3c', '#e67e22', '#f1c40f', '#2ecc71', '#3498db', '#9b59b6'];
+                tColor = rc[Math.floor(Math.random() * rc.length)];
+            } else if (selectedTrail.type === 'fire') {
+                const fc = ['#e74c3c', '#e67e22', '#f39c12', '#ff4757'];
+                tColor = fc[Math.floor(Math.random() * fc.length)];
+                tSize = Math.random() * 7 + 5;
+            }
+            trailParticles.push({
+                x: bird.x - 10 + (Math.random() - 0.5) * 6,
+                y: bird.y + (Math.random() - 0.5) * 6,
+                size: tSize, color: tColor, alpha: tLife,
+                decay: selectedTrail.type === 'fire' ? 0.05 : 0.04
+            });
+        }
+
+        for (let i = trailParticles.length - 1; i >= 0; i--) {
+            let tp = trailParticles[i];
+            tp.alpha -= tp.decay; tp.x -= 1.8;
+            if (tp.alpha <= 0) trailParticles.splice(i, 1);
+        }
+
+        if (bird.y + bird.size > canvas.height - 40) gameOver();
+        if (bird.y - bird.size < 0) { bird.y = bird.size; bird.velocity = 0; }
+
+        if (frameCount % 220 === 0) {
+            let gap = 160.5, minHeight = 40;
+            let maxHeight = canvas.height - 40 - gap - minHeight;
+            let topHeight = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
+            pipes.push({ x: canvas.width, top: topHeight, bottom: canvas.height - 40 - (topHeight + gap), passed: false });
+            if (Math.random() < 0.6) {
+                coins.push({ x: canvas.width + 25, y: topHeight + gap / 2, size: 12, collected: false });
+            }
+        }
+
+        for (let i = pipes.length - 1; i >= 0; i--) {
+            pipes[i].x -= 1.8;
+            if (!pipes[i].passed && pipes[i].x < bird.x) {
+                pipes[i].passed = true;
+                score++;
+                totalScoreWallet++;
+                localStorage.setItem('clumsy_total_score_wallet', totalScoreWallet);
+                updateHUD();
+
+                if (score > 0 && score % 25 === 0) {
+                    let bonusReward = (score / 25) * 5;
+                    if (powerState.double.active) bonusReward *= 2;
+                    totalCoins += bonusReward; sessionCoins += bonusReward;
+                    localStorage.setItem('clumsy_coins', totalCoins);
+                    updateHUD();
+                    createFloatingText(t('bonusReward', {val: bonusReward}), canvas.width / 2, 180, '#ffd700');
+                    createParticles(bird.x, bird.y, 25, '#ffd700');
+                    playSound('bonus');
+                }
+                if (score > highScore) { highScore = score; localStorage.setItem('clumsy_highscore', highScore); }
+            }
+
+            let p = pipes[i], birdRadius = bird.size / 1.3;
+            if (bird.x + birdRadius > p.x && bird.x - birdRadius < p.x + 50) {
+                if (bird.y - birdRadius < p.top || bird.y + birdRadius > canvas.height - 40 - p.bottom) {
+                    gameOver();
+                }
+            }
+            if (pipes[i].x < -50) pipes.splice(i, 1);
+        }
+
+        for (let i = coins.length - 1; i >= 0; i--) {
+            coins[i].x -= 1.8;
+            let c = coins[i];
+            if (!c.collected) {
+                if (powerState.magnet.active) {
+                    let distToBird = Math.hypot(bird.x - c.x, bird.y - c.y);
+                    if (distToBird < 130) { c.x += (bird.x - c.x) * 0.1; c.y += (bird.y - c.y) * 0.1; }
+                }
+                let dist = Math.hypot(bird.x - c.x, bird.y - c.y);
+                if (dist < bird.size + c.size) {
+                    c.collected = true;
+                    let coinVal = powerState.double.active ? 2 : 1;
+                    totalCoins += coinVal; sessionCoins += coinVal;
+                    localStorage.setItem('clumsy_coins', totalCoins);
+                    updateHUD();
+                    createParticles(c.x, c.y, 10, '#ffd700');
+                    createFloatingText(`+${coinVal}`, c.x, c.y - 10, '#ffd700');
+                    playSound('coin');
+                }
+            }
+            if (coins[i].x < -30) coins.splice(i, 1);
+        }
+
+        for (let i = particles.length - 1; i >= 0; i--) {
+            let p = particles[i]; p.x += p.vx; p.y += p.vy; p.alpha -= 0.025;
+            if (p.alpha <= 0) particles.splice(i, 1);
+        }
+
+        for (let i = floatingTexts.length - 1; i >= 0; i--) {
+            let ft = floatingTexts[i]; ft.y -= 1; ft.alpha -= 0.015;
+            if (ft.alpha <= 0) floatingTexts.splice(i, 1);
+        }
+        frameCount++;
+    }
+
+    function draw() {
+        let skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        skyGradient.addColorStop(0, selectedBg.top);
+        skyGradient.addColorStop(0.5, selectedBg.mid);
+        skyGradient.addColorStop(1, selectedBg.bottom);
+        ctx.fillStyle = skyGradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        if (selectedBg.hasStars) {
+            stars.forEach(s => {
+                s.blink += 0.05;
+                let alpha = Math.abs(Math.sin(s.blink));
+                ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+                ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2); ctx.fill();
+            });
+        }
+
+        if (selectedBg.isNight) {
+            ctx.fillStyle = '#f5f6fa'; ctx.shadowColor = '#fff'; ctx.shadowBlur = 15;
+            ctx.beginPath(); ctx.arc(330, 90, 22, 0, Math.PI * 2); ctx.fill();
+            ctx.shadowBlur = 0;
+        } else {
+            ctx.fillStyle = '#f1c40f'; ctx.shadowColor = '#f39c12'; ctx.shadowBlur = 20;
+            ctx.beginPath(); ctx.arc(70, 80, 26, 0, Math.PI * 2); ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+
+        ctx.fillStyle = selectedBg.isNight ? 'rgba(15, 23, 42, 0.5)' : 'rgba(255, 255, 255, 0.25)';
+        ctx.beginPath();
+        ctx.moveTo(0, 450); ctx.lineTo(100, 380); ctx.lineTo(220, 460); ctx.lineTo(320, 390); ctx.lineTo(400, 450); ctx.lineTo(400, 560); ctx.lineTo(0, 560);
+        ctx.fill();
+
+        trailParticles.forEach(tp => {
+            ctx.save(); ctx.globalAlpha = tp.alpha; ctx.fillStyle = tp.color;
+            ctx.shadowColor = tp.color; ctx.shadowBlur = 8;
+            ctx.beginPath(); ctx.arc(tp.x, tp.y, tp.size, 0, Math.PI * 2); ctx.fill();
+            ctx.restore();
+        });
+
+        pipes.forEach(p => {
+            let w = 52, capH = 20;
+            let topGrad = ctx.createLinearGradient(p.x, 0, p.x + w, 0);
+            topGrad.addColorStop(0, selectedPipeColor.dark);
+            topGrad.addColorStop(0.3, selectedPipeColor.main);
+            topGrad.addColorStop(0.7, selectedPipeColor.light);
+            topGrad.addColorStop(1, selectedPipeColor.dark);
+            
+            ctx.fillStyle = topGrad;
+            ctx.fillRect(p.x, 0, w, p.top);
+            ctx.fillRect(p.x - 3, p.top - capH, w + 6, capH);
+            ctx.strokeStyle = 'rgba(0,0,0,0.15)'; ctx.strokeRect(p.x - 3, p.top - capH, w + 6, capH);
+
+            let bottomY = canvas.height - 40 - p.bottom;
+            ctx.fillRect(p.x, bottomY, w, p.bottom);
+            ctx.fillRect(p.x - 3, bottomY, w + 6, capH);
+            ctx.strokeRect(p.x - 3, bottomY, w + 6, capH);
+        });
+
+        coins.forEach(c => {
+            if (!c.collected) {
+                ctx.save(); ctx.translate(c.x, c.y);
+                ctx.font = '20px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.shadowColor = 'rgba(255, 215, 0, 0.6)'; ctx.shadowBlur = 10;
+                ctx.fillText('🪙', 0, 0);
+                ctx.restore();
+            }
+        });
+
+        particles.forEach(p => {
+            ctx.save(); ctx.globalAlpha = p.alpha; ctx.fillStyle = p.color;
+            ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
+            ctx.restore();
+        });
+
+        ctx.fillStyle = selectedBg.isNight ? '#2c3e50' : '#eccc68';
+        ctx.fillRect(0, canvas.height - 40, canvas.width, 40);
+        ctx.fillStyle = selectedBg.isNight ? '#1e272e' : '#2ed573';
+        ctx.fillRect(0, canvas.height - 40, canvas.width, 10);
+
+        ctx.strokeStyle = 'rgba(0,0,0,0.1)'; ctx.lineWidth = 3;
+        for (let x = -groundOffset; x < canvas.width; x += 20) {
+            ctx.beginPath(); ctx.moveTo(x, canvas.height - 30); ctx.lineTo(x + 10, canvas.height); ctx.stroke();
+        }
+
+        ctx.save();
+        ctx.translate(bird.x, bird.y);
+        if (selectedChar.flip) ctx.scale(-1, 1);
+        let angle = Math.min(Math.PI / 4, Math.max(-Math.PI / 4, bird.velocity * 0.08));
+        ctx.rotate(selectedChar.flip ? -angle : angle);
+        ctx.font = `${bird.size * 2}px Arial`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(selectedChar.emoji, 0, 0);
+        ctx.restore();
+
+        floatingTexts.forEach(ft => {
+            ctx.save(); ctx.globalAlpha = ft.alpha;
+            ctx.font = '900 18px Segoe UI, sans-serif';
+            ctx.fillStyle = ft.color; ctx.strokeStyle = '#000'; ctx.lineWidth = 3; ctx.textAlign = 'center';
+            ctx.strokeText(ft.text, ft.x, ft.y);
+            ctx.fillText(ft.text, ft.x, ft.y);
+            ctx.restore();
+        });
+
+        if (gameState === 'PLAYING') {
+            ctx.fillStyle = '#fff'; ctx.strokeStyle = 'rgba(0,0,0,0.5)'; ctx.lineWidth = 5;
+            ctx.font = '900 42px Segoe UI, sans-serif'; ctx.textAlign = 'center';
+            ctx.strokeText(score, canvas.width / 2, 95);
+            ctx.fillText(score, canvas.width / 2, 95);
+        }
+    }
+
+    function updateGameOverOverlayText() {
+        overlay.querySelector('.instructions').innerHTML = `${t('scoreText')}: <b>${score}</b> | ${t('highScoreText')}: <b>${highScore}</b><br>${t('earnedThisRound')}: <b>${sessionCoins} 🪙</b><br><br>${t('flappyInstructions')}`;
+    }
+
+    function gameOver() {
+        gameState = 'GAMEOVER';
+        resetAllPowers();
+        overlayTitle.innerText = t('scoreLbl') + ": " + score;
+        startBtn.innerText = t('restartBtn');
+        startBtn.style.display = 'inline-block';
+        shopToggle.style.display = 'flex';
+        pipeToggle.style.display = 'flex';
+        playSound('hit');
+        stopBGM();
+        updateGameOverOverlayText();
+        overlay.style.display = 'flex';
+    }
+
+    function loop() {
+        if (gameContainer.style.display === 'block') {
+            update();
+            draw();
+        }
+        requestAnimationFrame(loop);
+    }
+
+    loop();
+</script>
+</body>
+</html>
