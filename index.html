@@ -296,17 +296,17 @@
 
         .char-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(1, 1fr);
             gap: 8px;
         }
 
         .char-card {
             position: relative;
-            height: 52px;
+            height: 65px;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            justify-content: center;
+            padding-left: 15px;
+            gap: 15px;
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255,255,255,0.08);
             border-radius: 10px;
@@ -314,10 +314,24 @@
             transition: all 0.2s;
         }
 
-        .char-card .emoji { font-size: 20px; }
-        .char-card .cost { font-size: 8px; color: #ffd700; font-weight: bold; margin-top: 2px; }
-        .char-card.locked { opacity: 0.5; background: rgba(0, 0, 0, 0.4); }
-        .char-card.locked::after { content: '🔒'; position: absolute; top: 2px; right: 2px; font-size: 7px; }
+        .char-preview-canvas {
+            width: 45px;
+            height: 45px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .char-details {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .char-card .char-name { font-size: 13px; font-weight: bold; color: #fff; }
+        .char-card .cost { font-size: 10px; color: #ffd700; font-weight: bold; margin-top: 2px; }
+        .char-card.locked { opacity: 0.6; background: rgba(0, 0, 0, 0.4); }
+        .char-card.locked::after { content: '🔒'; position: absolute; top: 8px; right: 10px; font-size: 11px; }
         .char-card:hover { transform: translateY(-2px); background: rgba(255, 255, 255, 0.08); }
         .char-card.active { border-color: #818cf8; background: rgba(99, 102, 241, 0.2); box-shadow: 0 0 10px rgba(99, 102, 241, 0.4); }
 
@@ -766,7 +780,7 @@
 
     let totalCoins = parseInt(localStorage.getItem('clumsy_coins')) || 0;
     let totalScoreWallet = parseInt(localStorage.getItem('clumsy_total_score_wallet')) || 0;
-    let unlockedChars = JSON.parse(localStorage.getItem('clumsy_unlocked')) || ['yellow_bird'];
+    let unlockedChars = JSON.parse(localStorage.getItem('clumsy_unlocked')) || ['minik_kus'];
     let unlockedBgs = JSON.parse(localStorage.getItem('clumsy_bgs_unlocked')) || ['classic_sky'];
     let unlockedTrails = JSON.parse(localStorage.getItem('clumsy_trails_unlocked')) || ['none'];
 
@@ -885,15 +899,166 @@
         }
     });
 
-    const baseEmojis = ['🐤','🐦','🐝','🐱','🦇','👻','👽','✈️','🐉','🚀','🐶','🦊','🐼','🐨','🦁','🐯','🦄','🦖','🐙','🐳','🐬','🐧','🦉','🦋','🐢','🦀','⚡','🔥','💎','🍀','🍎','🍔','🍕','⚽','🏀','🎾','🎲','🎯','🔮','🧸','⭐','🌙','☀️','🌈','⛄','⚡','👑','💎','🏆'];
-    const characters = [];
-    for(let i = 0; i < 49; i++) {
-        let id = i === 0 ? 'yellow_bird' : `char_${i}`;
-        let emoji = baseEmojis[i % baseEmojis.length];
-        let flip = i % 2 === 0;
-        let price = i === 0 ? 0 : Math.round(15 + (985 * (i / 48)));
-        characters.push({ id, emoji, price, flip });
-    }
+    // 1 Orijinal + 5 Yeni Tatlış Karakter Tasarımı (Toplam 6)
+    const characters = [
+        { id: 'minik_kus', name: '', price: 0, draw: function(ctx, x, y, angle) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            let wingOffset = Math.sin(Date.now() / 80) * 3;
+            // Kuyruk
+            ctx.fillStyle = '#d35400';
+            ctx.beginPath();
+            ctx.moveTo(-16, 2); ctx.lineTo(-26, -6); ctx.lineTo(-22, 6);
+            ctx.closePath(); ctx.fill();
+            // Gövde
+            let bodyGrad = ctx.createRadialGradient(-4, -4, 2, 0, 0, 18);
+            bodyGrad.addColorStop(0, '#f1c40f');
+            bodyGrad.addColorStop(1, '#e67e22');
+            ctx.fillStyle = bodyGrad;
+            ctx.beginPath(); ctx.arc(0, 0, 16, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#b7950b'; ctx.lineWidth = 2; ctx.stroke();
+            // Kanat
+            ctx.fillStyle = '#f39c12';
+            ctx.beginPath(); ctx.ellipse(-2, 4 + wingOffset, 8, 5, Math.PI / 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            // Göz
+            ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(7, -5, 6, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#333'; ctx.lineWidth = 1.5; ctx.stroke();
+            ctx.fillStyle = '#000000'; ctx.beginPath(); ctx.arc(9, -5, 2.5, 0, Math.PI * 2); ctx.fill();
+            // Gaga
+            ctx.fillStyle = '#e74c3c';
+            ctx.beginPath(); ctx.moveTo(14, -3); ctx.lineTo(24, 0); ctx.lineTo(14, 4);
+            ctx.closePath(); ctx.fill(); ctx.strokeStyle = '#922b21'; ctx.stroke();
+            ctx.restore();
+        }},
+        { id: 'puffy_bulut', name: '', price: 50, draw: function(ctx, x, y, angle) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle * 0.5);
+            let floatS = Math.sin(Date.now() / 150) * 2;
+            // Yumuşak Bulut Parçaları (Beyaz-Mavi tonlar)
+            ctx.fillStyle = '#ffffff';
+            ctx.shadowColor = 'rgba(135, 206, 250, 0.6)'; ctx.shadowBlur = 8;
+            ctx.beginPath();
+            ctx.arc(-6, floatS, 10, 0, Math.PI * 2);
+            ctx.arc(6, -3 + floatS, 12, 0, Math.PI * 2);
+            ctx.arc(10, 5 + floatS, 9, 0, Math.PI * 2);
+            ctx.arc(-8, 6 + floatS, 8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            // Sevimli Gözler
+            ctx.fillStyle = '#2c3e50';
+            ctx.beginPath(); ctx.arc(3, -2 + floatS, 2.2, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(11, -2 + floatS, 2.2, 0, Math.PI * 2); ctx.fill();
+            // Yanaklar (Pembe)
+            ctx.fillStyle = 'rgba(255, 105, 180, 0.6)';
+            ctx.beginPath(); ctx.arc(0, 2 + floatS, 3, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(14, 2 + floatS, 3, 0, Math.PI * 2); ctx.fill();
+            ctx.restore();
+        }},
+        { id: 'minik_papatya', name: '', price: 100, draw: function(ctx, x, y, angle) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            // Yapraklar (Beyaz Taç Yaprakları)
+            for (let i = 0; i < 6; i++) {
+                ctx.save();
+                ctx.rotate((Math.PI / 3) * i);
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath(); ctx.ellipse(13, 0, 7, 4, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.strokeStyle = '#ddd'; ctx.lineWidth = 1; ctx.stroke();
+                ctx.restore();
+            }
+            // Çiçek Merkezi (Sarı Gövde)
+            let centerGrad = ctx.createRadialGradient(-2, -2, 1, 0, 0, 10);
+            centerGrad.addColorStop(0, '#f1c40f'); centerGrad.addColorStop(1, '#d35400');
+            ctx.fillStyle = centerGrad;
+            ctx.beginPath(); ctx.arc(0, 0, 10, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#b7950b'; ctx.lineWidth = 1.5; ctx.stroke();
+            // Gülümseyen Gözler ve Ağız
+            ctx.fillStyle = '#333';
+            ctx.beginPath(); ctx.arc(-3, -2, 1.5, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(3, -2, 1.5, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#333'; ctx.lineWidth = 1.2;
+            ctx.beginPath(); ctx.arc(0, 1, 3, 0, Math.PI); ctx.stroke();
+            ctx.restore();
+        }},
+        { id: 'tatli_yildiz', name: '', price: 150, draw: function(ctx, x, y, angle) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle + Math.sin(Date.now() / 100) * 0.1);
+            // Yıldız Gövdesi
+            ctx.fillStyle = '#f1c40f';
+            ctx.shadowColor = '#f39c12'; ctx.shadowBlur = 10;
+            ctx.beginPath();
+            let spikes = 5, outerRadius = 16, innerRadius = 7;
+            for (let i = 0; i < spikes * 2; i++) {
+                let r = (i % 2 === 0) ? outerRadius : innerRadius;
+                let a = (Math.PI / spikes) * i - Math.PI / 2;
+                let sx = Math.cos(a) * r, sy = Math.sin(a) * r;
+                if (i === 0) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
+            }
+            ctx.closePath(); ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = '#d4ac0d'; ctx.lineWidth = 1.5; ctx.stroke();
+            // Gözler
+            ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(-3, -1, 3.5, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#333'; ctx.beginPath(); ctx.arc(-2, -1, 1.5, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(5, -1, 3.5, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#333'; ctx.beginPath(); ctx.arc(6, -1, 1.5, 0, Math.PI * 2); ctx.fill();
+            ctx.restore();
+        }},
+        { id: 'balon_kalp', name: '', price: 200, draw: function(ctx, x, y, angle) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            let pulse = 1 + Math.sin(Date.now() / 120) * 0.05;
+            ctx.scale(pulse, pulse);
+            // Kalp Çizimi
+            ctx.fillStyle = '#ff4757';
+            ctx.shadowColor = '#ff6b81'; ctx.shadowBlur = 10;
+            ctx.beginPath();
+            ctx.moveTo(0, 6);
+            ctx.bezierCurveTo(-14, -6, -18, -14, -10, -18);
+            ctx.bezierCurveTo(-3, -22, 0, -12, 0, -10);
+            ctx.bezierCurveTo(0, -12, 3, -22, 10, -18);
+            ctx.bezierCurveTo(18, -14, 14, -6, 0, 6);
+            ctx.closePath(); ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = '#c0392b'; ctx.lineWidth = 1.5; ctx.stroke();
+            // Parlaklık Efekti
+            ctx.fillStyle = 'rgba(255,255,255,0.4)';
+            ctx.beginPath(); ctx.ellipse(-6, -10, 3, 5, Math.PI / 4, 0, Math.PI * 2); ctx.fill();
+            ctx.restore();
+        }},
+        { id: 'minik_donut', name: '', price: 250, draw: function(ctx, x, y, angle) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            // Donut Hamuru
+            ctx.fillStyle = '#f39c12';
+            ctx.beginPath(); ctx.arc(0, 0, 16, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#d35400'; ctx.lineWidth = 2; ctx.stroke();
+            // Üzerindeki Glazür (Pembe)
+            ctx.fillStyle = '#ff6b81';
+            ctx.beginPath();
+            ctx.arc(0, 0, 15, 0.2, Math.PI - 0.2);
+            ctx.lineTo(0, 0);
+            ctx.closePath(); ctx.fill();
+            // Ortadaki Delik (Boşluk)
+            ctx.fillStyle = selectedBg.bottom; // Arka planla uyumlu delik
+            ctx.beginPath(); ctx.arc(0, 0, 6, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#c0392b'; ctx.lineWidth = 1; ctx.stroke();
+            // Renkli Şekerlemeler (Sprinkles)
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(6, -8, 4, 2);
+            ctx.fillStyle = '#f1c40f';
+            ctx.fillRect(-10, 4, 3, 2);
+            ctx.fillStyle = '#3498db';
+            ctx.fillRect(-2, -11, 2, 4);
+            ctx.restore();
+        }}
+    ];
 
     const backgrounds = [
         { id: 'classic_sky', price: 0, top: '#4a90e2', mid: '#50e3c2', bottom: '#b8e994', isNight: false, hasStars: false },
@@ -946,7 +1111,7 @@
         magnet: { active: false, timer: 0, interval: null }
     };
 
-    let bird = { x: 80, y: 250, size: 22, gravity: 0.12, lift: -4.2, velocity: 0 };
+    let bird = { x: 80, y: 250, size: 18, gravity: 0.12, lift: -4.2, velocity: 0 };
     let pipes = [], coins = [], particles = [], floatingTexts = [], stars = [];
     let sessionCoins = 0, frameCount = 0, score = 0;
     let highScore = parseInt(localStorage.getItem('clumsy_highscore')) || 0;
@@ -1088,7 +1253,25 @@
             const isUnlocked = unlockedChars.includes(char.id);
             const card = document.createElement('div');
             card.className = `char-card ${isUnlocked ? '' : 'locked'} ${selectedChar.id === char.id ? 'active' : ''}`;
-            card.innerHTML = `<div class="emoji" style="${char.flip ? 'transform: scaleX(-1);' : ''}">${char.emoji}</div><div class="cost">${isUnlocked ? 'Unlocked' : char.price + '🪙'}</div>`;
+            
+            // Önizleme için minik canvas
+            const previewCanvas = document.createElement('canvas');
+            previewCanvas.className = 'char-preview-canvas';
+            previewCanvas.width = 45;
+            previewCanvas.height = 45;
+            const pCtx = previewCanvas.getContext('2d');
+            pCtx.save();
+            pCtx.translate(22.5, 22.5);
+            char.draw(pCtx, 0, 0, 0);
+            pCtx.restore();
+
+            const details = document.createElement('div');
+            details.className = 'char-details';
+            details.innerHTML = `<div class="char-name">${char.name}</div><div class="cost">${isUnlocked ? 'Unlocked' : char.price + '🪙'}</div>`;
+
+            card.appendChild(previewCanvas);
+            card.appendChild(details);
+
             card.onclick = (e) => {
                 e.stopPropagation();
                 if (isUnlocked) { selectedChar = char; renderCharMenu(); }
@@ -1275,15 +1458,20 @@
             let maxHeight = canvas.height - 40 - gap - minHeight;
             let topHeight = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
             let pipeWidth = 52;
+            let bottomHeight = canvas.height - 40 - (topHeight + gap);
 
-            pipes.push({ x: canvas.width, top: topHeight, bottom: canvas.height - 40 - (topHeight + gap), passed: false });
+            pipes.push({ x: canvas.width, top: topHeight, bottom: bottomHeight, passed: false });
             
             if (Math.random() < 0.6) {
-                // Borunun hemen sağındaki boşluğun tam ortasında çıkacak şekilde konum güncellendi
-                let coinX = canvas.width + 198; 
-                let coinY = topHeight + (gap / 2);
-                coins.push({ x: coinX, y: coinY, size: 12, collected: false });
-            }
+    let coinY = topHeight + 30 + Math.random() * (gap - 60);
+
+    coins.push({
+        x: canvas.width + 150,
+        y: coinY,
+        size: 12,
+        collected: false
+    });
+}
         }
 
         for (let i = pipes.length - 1; i >= 0; i--) {
@@ -1436,14 +1624,8 @@
             ctx.beginPath(); ctx.moveTo(x, canvas.height - 30); ctx.lineTo(x + 10, canvas.height); ctx.stroke();
         }
 
-        ctx.save();
-        ctx.translate(bird.x, bird.y);
-        if (selectedChar.flip) ctx.scale(-1, 1);
         let angle = Math.min(Math.PI / 4, Math.max(-Math.PI / 4, bird.velocity * 0.08));
-        ctx.rotate(selectedChar.flip ? -angle : angle);
-        ctx.font = `${bird.size * 2}px Arial`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText(selectedChar.emoji, 0, 0);
-        ctx.restore();
+        selectedChar.draw(ctx, bird.x, bird.y, angle);
 
         floatingTexts.forEach(ft => {
             ctx.save(); ctx.globalAlpha = ft.alpha;
