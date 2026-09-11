@@ -653,13 +653,13 @@
             bg_deep_space: "Derin Uzay",
             bg_candy_land: "Şeker Diyarı",
             bg_matrix_green: "Matris",
-            bg_desert_sand: "Çöl Kumları",
+            bg_desert_sand: "Çöl Fırtınası",
             bg_arctic_frost: "Kutup Buzulu",
             bg_volcano_fire: "Volkan Ateşi",
             bg_neon_synth: "Neon Synth",
             bg_autumn_forest: "Sonbahar Ormanı",
             bg_royal_purple: "Kraliyet Moru",
-            bg_abyss_ocean: "Okyanus Dip",
+            bg_abyss_ocean: "Okyanus Dibi",
             bg_golden_heaven: "Altın Cennet"
         },
         en: {
@@ -697,7 +697,7 @@
             bg_deep_space: "Deep Space",
             bg_candy_land: "Candy Land",
             bg_matrix_green: "Matrix Green",
-            bg_desert_sand: "Desert Sand",
+            bg_desert_sand: "Desert Storm",
             bg_arctic_frost: "Arctic Frost",
             bg_volcano_fire: "Volcano Fire",
             bg_neon_synth: "Neon Synth",
@@ -899,33 +899,27 @@
         }
     });
 
-    // 1 Orijinal + 5 Yeni Tatlış Karakter Tasarımı (Toplam 6)
     const characters = [
         { id: 'minik_kus', name: '', price: 0, draw: function(ctx, x, y, angle) {
             ctx.save();
             ctx.translate(x, y);
             ctx.rotate(angle);
             let wingOffset = Math.sin(Date.now() / 80) * 3;
-            // Kuyruk
             ctx.fillStyle = '#d35400';
             ctx.beginPath();
             ctx.moveTo(-16, 2); ctx.lineTo(-26, -6); ctx.lineTo(-22, 6);
             ctx.closePath(); ctx.fill();
-            // Gövde
             let bodyGrad = ctx.createRadialGradient(-4, -4, 2, 0, 0, 18);
             bodyGrad.addColorStop(0, '#f1c40f');
             bodyGrad.addColorStop(1, '#e67e22');
             ctx.fillStyle = bodyGrad;
             ctx.beginPath(); ctx.arc(0, 0, 16, 0, Math.PI * 2); ctx.fill();
             ctx.strokeStyle = '#b7950b'; ctx.lineWidth = 2; ctx.stroke();
-            // Kanat
             ctx.fillStyle = '#f39c12';
             ctx.beginPath(); ctx.ellipse(-2, 4 + wingOffset, 8, 5, Math.PI / 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-            // Göz
             ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(7, -5, 6, 0, Math.PI * 2); ctx.fill();
             ctx.strokeStyle = '#333'; ctx.lineWidth = 1.5; ctx.stroke();
             ctx.fillStyle = '#000000'; ctx.beginPath(); ctx.arc(9, -5, 2.5, 0, Math.PI * 2); ctx.fill();
-            // Gaga
             ctx.fillStyle = '#e74c3c';
             ctx.beginPath(); ctx.moveTo(14, -3); ctx.lineTo(24, 0); ctx.lineTo(14, 4);
             ctx.closePath(); ctx.fill(); ctx.strokeStyle = '#922b21'; ctx.stroke();
@@ -936,7 +930,6 @@
             ctx.translate(x, y);
             ctx.rotate(angle * 0.5);
             let floatS = Math.sin(Date.now() / 150) * 2;
-            // Yumuşak Bulut Parçaları (Beyaz-Mavi tonlar)
             ctx.fillStyle = '#ffffff';
             ctx.shadowColor = 'rgba(135, 206, 250, 0.6)'; ctx.shadowBlur = 8;
             ctx.beginPath();
@@ -946,11 +939,9 @@
             ctx.arc(-8, 6 + floatS, 8, 0, Math.PI * 2);
             ctx.fill();
             ctx.shadowBlur = 0;
-            // Sevimli Gözler
             ctx.fillStyle = '#2c3e50';
             ctx.beginPath(); ctx.arc(3, -2 + floatS, 2.2, 0, Math.PI * 2); ctx.fill();
             ctx.beginPath(); ctx.arc(11, -2 + floatS, 2.2, 0, Math.PI * 2); ctx.fill();
-            // Yanaklar (Pembe)
             ctx.fillStyle = 'rgba(255, 105, 180, 0.6)';
             ctx.beginPath(); ctx.arc(0, 2 + floatS, 3, 0, Math.PI * 2); ctx.fill();
             ctx.beginPath(); ctx.arc(14, 2 + floatS, 3, 0, Math.PI * 2); ctx.fill();
@@ -960,7 +951,6 @@
             ctx.save();
             ctx.translate(x, y);
             ctx.rotate(angle);
-            // Yapraklar (Beyaz Taç Yaprakları)
             for (let i = 0; i < 6; i++) {
                 ctx.save();
                 ctx.rotate((Math.PI / 3) * i);
@@ -969,13 +959,11 @@
                 ctx.strokeStyle = '#ddd'; ctx.lineWidth = 1; ctx.stroke();
                 ctx.restore();
             }
-            // Çiçek Merkezi (Sarı Gövde)
             let centerGrad = ctx.createRadialGradient(-2, -2, 1, 0, 0, 10);
             centerGrad.addColorStop(0, '#f1c40f'); centerGrad.addColorStop(1, '#d35400');
             ctx.fillStyle = centerGrad;
             ctx.beginPath(); ctx.arc(0, 0, 10, 0, Math.PI * 2); ctx.fill();
             ctx.strokeStyle = '#b7950b'; ctx.lineWidth = 1.5; ctx.stroke();
-            // Gülümseyen Gözler ve Ağız
             ctx.fillStyle = '#333';
             ctx.beginPath(); ctx.arc(-3, -2, 1.5, 0, Math.PI * 2); ctx.fill();
             ctx.beginPath(); ctx.arc(3, -2, 1.5, 0, Math.PI * 2); ctx.fill();
@@ -987,7 +975,6 @@
             ctx.save();
             ctx.translate(x, y);
             ctx.rotate(angle + Math.sin(Date.now() / 100) * 0.1);
-            // Yıldız Gövdesi
             ctx.fillStyle = '#f1c40f';
             ctx.shadowColor = '#f39c12'; ctx.shadowBlur = 10;
             ctx.beginPath();
@@ -1001,7 +988,6 @@
             ctx.closePath(); ctx.fill();
             ctx.shadowBlur = 0;
             ctx.strokeStyle = '#d4ac0d'; ctx.lineWidth = 1.5; ctx.stroke();
-            // Gözler
             ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(-3, -1, 3.5, 0, Math.PI * 2); ctx.fill();
             ctx.fillStyle = '#333'; ctx.beginPath(); ctx.arc(-2, -1, 1.5, 0, Math.PI * 2); ctx.fill();
             ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(5, -1, 3.5, 0, Math.PI * 2); ctx.fill();
@@ -1014,7 +1000,6 @@
             ctx.rotate(angle);
             let pulse = 1 + Math.sin(Date.now() / 120) * 0.05;
             ctx.scale(pulse, pulse);
-            // Kalp Çizimi
             ctx.fillStyle = '#ff4757';
             ctx.shadowColor = '#ff6b81'; ctx.shadowBlur = 10;
             ctx.beginPath();
@@ -1026,7 +1011,6 @@
             ctx.closePath(); ctx.fill();
             ctx.shadowBlur = 0;
             ctx.strokeStyle = '#c0392b'; ctx.lineWidth = 1.5; ctx.stroke();
-            // Parlaklık Efekti
             ctx.fillStyle = 'rgba(255,255,255,0.4)';
             ctx.beginPath(); ctx.ellipse(-6, -10, 3, 5, Math.PI / 4, 0, Math.PI * 2); ctx.fill();
             ctx.restore();
@@ -1035,47 +1019,41 @@
             ctx.save();
             ctx.translate(x, y);
             ctx.rotate(angle);
-            // Donut Hamuru
             ctx.fillStyle = '#f39c12';
             ctx.beginPath(); ctx.arc(0, 0, 16, 0, Math.PI * 2); ctx.fill();
             ctx.strokeStyle = '#d35400'; ctx.lineWidth = 2; ctx.stroke();
-            // Üzerindeki Glazür (Pembe)
             ctx.fillStyle = '#ff6b81';
             ctx.beginPath();
             ctx.arc(0, 0, 15, 0.2, Math.PI - 0.2);
             ctx.lineTo(0, 0);
             ctx.closePath(); ctx.fill();
-            // Ortadaki Delik (Boşluk)
-            ctx.fillStyle = selectedBg.bottom; // Arka planla uyumlu delik
+            ctx.fillStyle = selectedBg.bottom;
             ctx.beginPath(); ctx.arc(0, 0, 6, 0, Math.PI * 2); ctx.fill();
             ctx.strokeStyle = '#c0392b'; ctx.lineWidth = 1; ctx.stroke();
-            // Renkli Şekerlemeler (Sprinkles)
-            ctx.fillStyle = '#fff';
-            ctx.fillRect(6, -8, 4, 2);
-            ctx.fillStyle = '#f1c40f';
-            ctx.fillRect(-10, 4, 3, 2);
-            ctx.fillStyle = '#3498db';
-            ctx.fillRect(-2, -11, 2, 4);
+            ctx.fillStyle = '#fff'; ctx.fillRect(6, -8, 4, 2);
+            ctx.fillStyle = '#f1c40f'; ctx.fillRect(-10, 4, 3, 2);
+            ctx.fillStyle = '#3498db'; ctx.fillRect(-2, -11, 2, 4);
             ctx.restore();
         }}
     ];
 
+    // --- ARKA PLANLAR (Kutup Buzulu - Güneş normal, buzlar su üzerinde, üstünde kutup ayısı var) ---
     const backgrounds = [
-        { id: 'classic_sky', price: 0, top: '#4a90e2', mid: '#50e3c2', bottom: '#b8e994', isNight: false, hasStars: false },
-        { id: 'midnight_dark', price: 20, top: '#0d1b2a', mid: '#1b263b', bottom: '#415a77', isNight: true, hasStars: true },
-        { id: 'sunset_glow', price: 35, top: '#ff5e62', mid: '#ff9966', bottom: '#ffcc33', isNight: false, hasStars: false },
-        { id: 'cyberpunk_city', price: 50, top: '#2b0548', mid: '#791a8a', bottom: '#ff007f', isNight: true, hasStars: true },
-        { id: 'deep_space', price: 75, top: '#000000', mid: '#0a001f', bottom: '#150036', isNight: true, hasStars: true },
-        { id: 'candy_land', price: 90, top: '#ff758c', mid: '#ff7eb3', bottom: '#ffb199', isNight: false, hasStars: false },
-        { id: 'matrix_green', price: 110, top: '#051923', mid: '#006400', bottom: '#002800', isNight: true, hasStars: false },
-        { id: 'desert_sand', price: 130, top: '#d38312', mid: '#a83279', bottom: '#ff4e50', isNight: false, hasStars: false },
-        { id: 'arctic_frost', price: 150, top: '#2980b9', mid: '#6dd5fa', bottom: '#ffffff', isNight: false, hasStars: false },
-        { id: 'volcano_fire', price: 180, top: '#cb356b', mid: '#bd3f32', bottom: '#3a1c71', isNight: true, hasStars: false },
-        { id: 'neon_synth', price: 210, top: '#1a0033', mid: '#660066', bottom: '#ff00cc', isNight: true, hasStars: true },
-        { id: 'autumn_forest', price: 250, top: '#d97706', mid: '#b45309', bottom: '#78350f', isNight: false, hasStars: false },
-        { id: 'royal_purple', price: 300, top: '#31103f', mid: '#5c1d75', bottom: '#9b59b6', isNight: true, hasStars: true },
-        { id: 'abyss_ocean', price: 350, top: '#03001e', mid: '#7303c0', bottom: '#ec38bc', isNight: true, hasStars: false },
-        { id: 'golden_heaven', price: 500, top: '#f39c12', mid: '#f1c40f', bottom: '#d4ac0d', isNight: false, hasStars: false }
+        { id: 'classic_sky', price: 0, top: '#2980b9', mid: '#6dd5fa', bottom: '#ffffff', isNight: false, hasStars: false, theme: 'classic' },
+        { id: 'midnight_dark', price: 20, top: '#0f2027', mid: '#203a43', bottom: '#2c5364', isNight: true, hasStars: true, theme: 'space' },
+        { id: 'sunset_glow', price: 35, top: '#ff416c', mid: '#ff4b2b', bottom: '#f39c12', isNight: false, hasStars: false, theme: 'sunset' },
+        { id: 'cyberpunk_city', price: 50, top: '#140032', mid: '#3c096c', bottom: '#7209b7', isNight: true, hasStars: true, theme: 'cyber' },
+        { id: 'deep_space', price: 75, top: '#000000', mid: '#0f051d', bottom: '#1f1147', isNight: true, hasStars: true, theme: 'space' },
+        { id: 'candy_land', price: 90, top: '#ff9a9e', mid: '#fecfef', bottom: '#feada6', isNight: false, hasStars: false, theme: 'candy' },
+        { id: 'matrix_green', price: 110, top: '#001a00', mid: '#004d00', bottom: '#008000', isNight: true, hasStars: false, theme: 'matrix' },
+        { id: 'desert_sand', price: 130, top: '#d9822b', mid: '#f3c68f', bottom: '#c27820', isNight: false, hasStars: false, theme: 'desert' },
+        { id: 'arctic_frost', price: 150, top: '#1b4965', mid: '#62b6cb', bottom: '#bee9e8', isNight: false, hasStars: false, theme: 'arctic_frost' }, // Kutup Buzulu: Normal güneş, suların üstünde buzlar, üstünde kutup ayısı
+        { id: 'volcano_fire', price: 180, top: '#430000', mid: '#8b0000', bottom: '#ff4500', isNight: true, hasStars: false, theme: 'volcano' },
+        { id: 'neon_synth', price: 210, top: '#240046', mid: '#3c096c', bottom: '#e0aaff', isNight: true, hasStars: true, theme: 'neon' },
+        { id: 'autumn_forest', price: 250, top: '#8e44ad', mid: '#e67e22', bottom: '#d35400', isNight: false, hasStars: false, theme: 'autumn' },
+        { id: 'royal_purple', price: 300, top: '#1a002c', mid: '#4a154b', bottom: '#79207b', isNight: true, hasStars: true, theme: 'royal' },
+        { id: 'abyss_ocean', price: 350, top: '#014f86', mid: '#012a4a', bottom: '#000814', isNight: true, hasStars: false, theme: 'ocean' },
+        { id: 'golden_heaven', price: 500, top: '#d4af37', mid: '#f39c12', bottom: '#fff8dc', isNight: false, hasStars: false, theme: 'gold' }
     ];
     let selectedBg = backgrounds[0];
 
@@ -1092,6 +1070,34 @@
     ];
     let selectedTrail = trails[0];
     let trailParticles = [];
+
+    // Özel Arka Plan Parçacıkları (Suların üzerinde yüzen buzlar ve kutup ayısı için)
+    let customBgElements = [];
+    function initCustomBgElements() {
+        customBgElements = [];
+        // Suların üzerinde yüzen buz kütleleri
+        for (let i = 0; i < 5; i++) {
+            customBgElements.push({
+                x: i * 90 + Math.random() * 30,
+                y: 420 + Math.random() * 100, 
+                speed: 0.4, 
+                width: Math.random() * 50 + 60,
+                height: Math.random() * 12 + 15,
+                hasBear: (i === 1) // Buzların birinin üstünde kutup ayısı olsun
+            });
+        }
+        for (let i = 0; i < 20; i++) {
+            customBgElements.push({
+                x: Math.random() * 400,
+                y: Math.random() * 600,
+                speed: Math.random() * 2 + 1,
+                size: Math.random() * 8 + 3,
+                angle: Math.random() * Math.PI * 2,
+                rotSpeed: (Math.random() - 0.5) * 0.05,
+                type: 'particle'
+            });
+        }
+    }
 
     const pipeColors = [
         { id: 'green', main: '#2ecc71', dark: '#27ae60', light: '#58d68d' },
@@ -1120,6 +1126,7 @@
     for (let i = 0; i < 30; i++) {
         stars.push({ x: Math.random() * 400, y: Math.random() * 350, size: Math.random() * 2 + 1, blink: Math.random() * Math.PI });
     }
+    initCustomBgElements();
 
     function updateHUD() {
         totalCoinsDisplay.innerText = totalCoins;
@@ -1254,7 +1261,6 @@
             const card = document.createElement('div');
             card.className = `char-card ${isUnlocked ? '' : 'locked'} ${selectedChar.id === char.id ? 'active' : ''}`;
             
-            // Önizleme için minik canvas
             const previewCanvas = document.createElement('canvas');
             previewCanvas.className = 'char-preview-canvas';
             previewCanvas.width = 45;
@@ -1296,9 +1302,14 @@
             card.innerHTML = `<div class="bg-preview" style="background: linear-gradient(to bottom, ${bg.top}, ${bg.bottom});"></div><div class="name">${t('bg_' + bg.id)}</div><div class="cost">${isUnlocked ? 'Unlocked' : bg.price + '🪙'}</div>`;
             card.onclick = (e) => {
                 e.stopPropagation();
-                if (isUnlocked) { selectedBg = bg; renderBgMenu(); }
+                if (isUnlocked) { 
+                    selectedBg = bg; 
+                    initCustomBgElements();
+                    renderBgMenu(); 
+                }
                 else if (totalCoins >= bg.price) {
                     totalCoins -= bg.price; unlockedBgs.push(bg.id); selectedBg = bg;
+                    initCustomBgElements();
                     localStorage.setItem('clumsy_coins', totalCoins);
                     localStorage.setItem('clumsy_bgs_unlocked', JSON.stringify(unlockedBgs));
                     updateHUD(); renderBgMenu();
@@ -1425,6 +1436,17 @@
         bird.y += bird.velocity;
         groundOffset = (groundOffset + 1.8) % 20;
 
+        // Özel Efekt Elemanları Güncellemesi (Yüzen buzlar vb.)
+        customBgElements.forEach(el => {
+            if (el.width !== undefined) {
+                el.x -= el.speed * 0.8; 
+                if (el.x < -100) { el.x = canvas.width + 50; }
+            } else {
+                el.x -= el.speed * 0.6;
+                if (el.x < -30) { el.x = canvas.width + 30; el.y = Math.random() * canvas.height; }
+            }
+        });
+
         if (selectedTrail.type !== 'none') {
             let tColor = '#fff', tSize = Math.random() * 5 + 4, tLife = 1.0;
             if (selectedTrail.type === 'solid') tColor = selectedTrail.color;
@@ -1463,15 +1485,14 @@
             pipes.push({ x: canvas.width, top: topHeight, bottom: bottomHeight, passed: false });
             
             if (Math.random() < 0.6) {
-    let coinY = topHeight + 30 + Math.random() * (gap - 60);
-
-    coins.push({
-        x: canvas.width + 150,
-        y: coinY,
-        size: 12,
-        collected: false
-    });
-}
+                let coinY = topHeight + 30 + Math.random() * (gap - 60);
+                coins.push({
+                    x: canvas.width + 150,
+                    y: coinY,
+                    size: 12,
+                    collected: false
+                });
+            }
         }
 
         for (let i = pipes.length - 1; i >= 0; i--) {
@@ -1557,20 +1578,102 @@
             });
         }
 
-        if (selectedBg.isNight) {
-            ctx.fillStyle = '#f5f6fa'; ctx.shadowColor = '#fff'; ctx.shadowBlur = 15;
-            ctx.beginPath(); ctx.arc(330, 90, 22, 0, Math.PI * 2); ctx.fill();
+        // --- KUTUP BUZULU TEMASI: Normal Güneş, Su, Suların Üzerinde Buzlar ve Kutup Ayısı ---
+        if (selectedBg.theme === 'arctic_frost') {
+            // Normal Güneş (Gökyüzünün üst kısmında)
+            ctx.fillStyle = '#fffa65'; 
+            ctx.shadowColor = '#ffb142'; 
+            ctx.shadowBlur = 25;
+            ctx.beginPath(); 
+            ctx.arc(320, 90, 30, 0, Math.PI * 2); 
+            ctx.fill();
             ctx.shadowBlur = 0;
-        } else {
-            ctx.fillStyle = '#f1c40f'; ctx.shadowColor = '#f39c12'; ctx.shadowBlur = 20;
-            ctx.beginPath(); ctx.arc(70, 80, 26, 0, Math.PI * 2); ctx.fill();
-            ctx.shadowBlur = 0;
-        }
 
-        ctx.fillStyle = selectedBg.isNight ? 'rgba(15, 23, 42, 0.5)' : 'rgba(255, 255, 255, 0.25)';
-        ctx.beginPath();
-        ctx.moveTo(0, 450); ctx.lineTo(100, 380); ctx.lineTo(220, 460); ctx.lineTo(320, 390); ctx.lineTo(400, 450); ctx.lineTo(400, 560); ctx.lineTo(0, 560);
-        ctx.fill();
+            // Su Alanı (Okyanus)
+            ctx.fillStyle = '#2980b9'; 
+            ctx.fillRect(0, 420, canvas.width, 140);
+
+            // Suların Üzerinde Yüzen Buz Kütleleri ve Kutup Ayısı
+            customBgElements.forEach(el => {
+                if (el.width !== undefined) {
+                    ctx.save();
+                    ctx.translate(el.x, el.y);
+                    
+                    // Buz Kütlesi (Su üzerinde)
+                    ctx.fillStyle = '#ffffff';
+                    ctx.beginPath();
+                    ctx.ellipse(el.width / 2, 5, el.width / 2, el.height / 2, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = '#a4b0be';
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+
+                    // Eğer bu buz kütlesinin üzerindeyse Kutup Ayısını çiz
+                    if (el.hasBear) {
+                        let bearX = el.width / 2;
+                        let bearY = -10;
+                        
+                        // Ayı Gövdesi
+                        ctx.fillStyle = '#f1f2f6';
+                        ctx.beginPath();
+                        ctx.ellipse(bearX, bearY, 16, 12, 0, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.strokeStyle = '#dfe4ea';
+                        ctx.stroke();
+
+                        // Ayı Kafası
+                        ctx.beginPath();
+                        ctx.arc(bearX + 8, bearY - 10, 10, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.stroke();
+
+                        // Kulaklar
+                        ctx.beginPath();
+                        ctx.arc(bearX + 4, bearY - 18, 3, 0, Math.PI * 2);
+                        ctx.arc(bearX + 13, bearY - 18, 3, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        // Göz ve Burun
+                        ctx.fillStyle = '#2f3542';
+                        ctx.beginPath();
+                        ctx.arc(bearX + 11, bearY - 11, 1.5, 0, Math.PI * 2);
+                        ctx.arc(bearX + 15, bearY - 8, 2, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+
+                    ctx.restore();
+                }
+            });
+        } else {
+            // Diğer temalar için standart elementler
+            customBgElements.forEach(el => {
+                if (el.type === 'particle') {
+                    ctx.save();
+                    ctx.translate(el.x, el.y);
+                    ctx.rotate(el.angle);
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+                    ctx.fillRect(0, 0, el.size, el.size);
+                    ctx.restore();
+                }
+            });
+
+            if (selectedBg.isNight && selectedBg.theme !== 'ocean') {
+                ctx.fillStyle = '#f5f6fa'; ctx.shadowColor = '#fff'; ctx.shadowBlur = 15;
+                ctx.beginPath(); ctx.arc(330, 90, 22, 0, Math.PI * 2); ctx.fill();
+                ctx.shadowBlur = 0;
+            } else if (!selectedBg.isNight) {
+                ctx.fillStyle = '#f1c40f'; ctx.shadowColor = '#f39c12'; ctx.shadowBlur = 20;
+                ctx.beginPath(); ctx.arc(70, 80, 26, 0, Math.PI * 2); ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+
+            if (selectedBg.theme !== 'ocean') {
+                ctx.fillStyle = selectedBg.isNight ? 'rgba(15, 23, 42, 0.5)' : 'rgba(255, 255, 255, 0.25)';
+                ctx.beginPath();
+                ctx.moveTo(0, 450); ctx.lineTo(100, 380); ctx.lineTo(220, 460); ctx.lineTo(320, 390); ctx.lineTo(400, 450); ctx.lineTo(400, 560); ctx.lineTo(0, 560);
+                ctx.fill();
+            }
+        }
 
         trailParticles.forEach(tp => {
             ctx.save(); ctx.globalAlpha = tp.alpha; ctx.fillStyle = tp.color;
@@ -1614,9 +1717,13 @@
             ctx.restore();
         });
 
-        ctx.fillStyle = selectedBg.isNight ? '#2c3e50' : '#eccc68';
+        // --- ZEMİN KAPLAMASI ---
+        let groundColor = selectedBg.theme === 'arctic_frost' ? '#1b4f72' : (selectedBg.theme === 'desert' ? '#c27820' : (selectedBg.theme === 'ocean' ? '#001d3d' : (selectedBg.isNight ? '#2c3e50' : '#eccc68')));
+        let groundSubColor = selectedBg.theme === 'arctic_frost' ? '#154360' : (selectedBg.theme === 'desert' ? '#a36114' : (selectedBg.theme === 'ocean' ? '#000f1a' : (selectedBg.isNight ? '#1e272e' : '#2ed573')));
+        
+        ctx.fillStyle = groundColor;
         ctx.fillRect(0, canvas.height - 40, canvas.width, 40);
-        ctx.fillStyle = selectedBg.isNight ? '#1e272e' : '#2ed573';
+        ctx.fillStyle = groundSubColor;
         ctx.fillRect(0, canvas.height - 40, canvas.width, 10);
 
         ctx.strokeStyle = 'rgba(0,0,0,0.1)'; ctx.lineWidth = 3;
