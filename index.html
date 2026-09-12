@@ -1037,7 +1037,7 @@
         }}
     ];
 
-    // --- ARKA PLANLAR (Kutup Buzulu - Güneş normal, buzlar su üzerinde, üstünde kutup ayısı var) ---
+    // --- ARKA PLANLAR ---
     const backgrounds = [
         { id: 'classic_sky', price: 0, top: '#2980b9', mid: '#6dd5fa', bottom: '#ffffff', isNight: false, hasStars: false, theme: 'classic' },
         { id: 'midnight_dark', price: 20, top: '#0f2027', mid: '#203a43', bottom: '#2c5364', isNight: true, hasStars: true, theme: 'space' },
@@ -1047,7 +1047,7 @@
         { id: 'candy_land', price: 90, top: '#ff9a9e', mid: '#fecfef', bottom: '#feada6', isNight: false, hasStars: false, theme: 'candy' },
         { id: 'matrix_green', price: 110, top: '#001a00', mid: '#004d00', bottom: '#008000', isNight: true, hasStars: false, theme: 'matrix' },
         { id: 'desert_sand', price: 130, top: '#d9822b', mid: '#f3c68f', bottom: '#c27820', isNight: false, hasStars: false, theme: 'desert' },
-        { id: 'arctic_frost', price: 150, top: '#1b4965', mid: '#62b6cb', bottom: '#bee9e8', isNight: false, hasStars: false, theme: 'arctic_frost' }, // Kutup Buzulu: Normal güneş, suların üstünde buzlar, üstünde kutup ayısı
+        { id: 'arctic_frost', price: 150, top: '#1b4965', mid: '#62b6cb', bottom: '#bee9e8', isNight: false, hasStars: false, theme: 'arctic_frost' },
         { id: 'volcano_fire', price: 180, top: '#430000', mid: '#8b0000', bottom: '#ff4500', isNight: true, hasStars: false, theme: 'volcano' },
         { id: 'neon_synth', price: 210, top: '#240046', mid: '#3c096c', bottom: '#e0aaff', isNight: true, hasStars: true, theme: 'neon' },
         { id: 'autumn_forest', price: 250, top: '#8e44ad', mid: '#e67e22', bottom: '#d35400', isNight: false, hasStars: false, theme: 'autumn' },
@@ -1071,11 +1071,9 @@
     let selectedTrail = trails[0];
     let trailParticles = [];
 
-    // Özel Arka Plan Parçacıkları (Suların üzerinde yüzen buzlar ve kutup ayısı için)
     let customBgElements = [];
     function initCustomBgElements() {
         customBgElements = [];
-        // Suların üzerinde yüzen buz kütleleri
         for (let i = 0; i < 5; i++) {
             customBgElements.push({
                 x: i * 90 + Math.random() * 30,
@@ -1083,7 +1081,7 @@
                 speed: 0.4, 
                 width: Math.random() * 50 + 60,
                 height: Math.random() * 12 + 15,
-                hasBear: (i === 1) // Buzların birinin üstünde kutup ayısı olsun
+                hasBear: (i === 1)
             });
         }
         for (let i = 0; i < 20; i++) {
@@ -1434,15 +1432,14 @@
         if (gameState !== 'PLAYING') return;
         bird.velocity += bird.gravity;
         bird.y += bird.velocity;
-        groundOffset = (groundOffset + 1.8) % 20;
+        groundOffset = (groundOffset + 1.8 * 0.95) % 20;
 
-        // Özel Efekt Elemanları Güncellemesi (Yüzen buzlar vb.)
         customBgElements.forEach(el => {
             if (el.width !== undefined) {
-                el.x -= el.speed * 0.8; 
+                el.x -= el.speed * 0.8 * 0.95; 
                 if (el.x < -100) { el.x = canvas.width + 50; }
             } else {
-                el.x -= el.speed * 0.6;
+                el.x -= el.speed * 0.6 * 0.95;
                 if (el.x < -30) { el.x = canvas.width + 30; el.y = Math.random() * canvas.height; }
             }
         });
@@ -1468,7 +1465,7 @@
 
         for (let i = trailParticles.length - 1; i >= 0; i--) {
             let tp = trailParticles[i];
-            tp.alpha -= tp.decay; tp.x -= 1.8;
+            tp.alpha -= tp.decay; tp.x -= 1.8 * 0.95;
             if (tp.alpha <= 0) trailParticles.splice(i, 1);
         }
 
@@ -1482,7 +1479,19 @@
             let pipeWidth = 52;
             let bottomHeight = canvas.height - 40 - (topHeight + gap);
 
-            pipes.push({ x: canvas.width, top: topHeight, bottom: bottomHeight, passed: false });
+            // %38 şans ile gelsin
+            let isMoving = (score >= 15 && Math.random() < 0.38);
+
+            pipes.push({
+                x: canvas.width,
+                top: topHeight,
+                bottom: bottomHeight,
+                passed: false,
+                isMoving: isMoving,
+                moveDir: 1,
+                minTop: 40,
+                maxTop: canvas.height - 40 - gap - 40
+            });
             
             if (Math.random() < 0.6) {
                 let coinY = topHeight + 30 + Math.random() * (gap - 60);
@@ -1496,9 +1505,25 @@
         }
 
         for (let i = pipes.length - 1; i >= 0; i--) {
-            pipes[i].x -= 1.8;
-            if (!pipes[i].passed && pipes[i].x < bird.x) {
-                pipes[i].passed = true;
+            let p = pipes[i];
+            p.x -= 1.8 * 0.95;
+
+            // Hareketli boru mantığı (aşağı yukarı)
+            if (p.isMoving) {
+                let gapSize = canvas.height - 40 - p.top - p.bottom;
+                p.top += p.moveDir * 0.8 * 0.95;
+                if (p.top < p.minTop) {
+                    p.top = p.minTop;
+                    p.moveDir = 1;
+                } else if (p.top > p.maxTop) {
+                    p.top = p.maxTop;
+                    p.moveDir = -1;
+                }
+                p.bottom = canvas.height - 40 - (p.top + gapSize);
+            }
+
+            if (!p.passed && p.x < bird.x) {
+                p.passed = true;
                 score++;
                 totalScoreWallet++;
                 localStorage.setItem('clumsy_total_score_wallet', totalScoreWallet);
@@ -1517,17 +1542,17 @@
                 if (score > highScore) { highScore = score; localStorage.setItem('clumsy_highscore', highScore); }
             }
 
-            let p = pipes[i], birdRadius = bird.size / 1.3;
+            let birdRadius = bird.size / 1.3;
             if (bird.x + birdRadius > p.x && bird.x - birdRadius < p.x + 50) {
                 if (bird.y - birdRadius < p.top || bird.y + birdRadius > canvas.height - 40 - p.bottom) {
                     gameOver();
                 }
             }
-            if (pipes[i].x < -50) pipes.splice(i, 1);
+            if (p.x < -50) pipes.splice(i, 1);
         }
 
         for (let i = coins.length - 1; i >= 0; i--) {
-            coins[i].x -= 1.8;
+            coins[i].x -= 1.8 * 0.95;
             let c = coins[i];
             if (!c.collected) {
                 if (powerState.magnet.active) {
@@ -1578,9 +1603,7 @@
             });
         }
 
-        // --- KUTUP BUZULU TEMASI: Normal Güneş, Su, Suların Üzerinde Buzlar ve Kutup Ayısı ---
         if (selectedBg.theme === 'arctic_frost') {
-            // Normal Güneş (Gökyüzünün üst kısmında)
             ctx.fillStyle = '#fffa65'; 
             ctx.shadowColor = '#ffb142'; 
             ctx.shadowBlur = 25;
@@ -1589,17 +1612,14 @@
             ctx.fill();
             ctx.shadowBlur = 0;
 
-            // Su Alanı (Okyanus)
             ctx.fillStyle = '#2980b9'; 
             ctx.fillRect(0, 420, canvas.width, 140);
 
-            // Suların Üzerinde Yüzen Buz Kütleleri ve Kutup Ayısı
             customBgElements.forEach(el => {
                 if (el.width !== undefined) {
                     ctx.save();
                     ctx.translate(el.x, el.y);
                     
-                    // Buz Kütlesi (Su üzerinde)
                     ctx.fillStyle = '#ffffff';
                     ctx.beginPath();
                     ctx.ellipse(el.width / 2, 5, el.width / 2, el.height / 2, 0, 0, Math.PI * 2);
@@ -1608,12 +1628,10 @@
                     ctx.lineWidth = 1.5;
                     ctx.stroke();
 
-                    // Eğer bu buz kütlesinin üzerindeyse Kutup Ayısını çiz
                     if (el.hasBear) {
                         let bearX = el.width / 2;
                         let bearY = -10;
                         
-                        // Ayı Gövdesi
                         ctx.fillStyle = '#f1f2f6';
                         ctx.beginPath();
                         ctx.ellipse(bearX, bearY, 16, 12, 0, 0, Math.PI * 2);
@@ -1621,19 +1639,16 @@
                         ctx.strokeStyle = '#dfe4ea';
                         ctx.stroke();
 
-                        // Ayı Kafası
                         ctx.beginPath();
                         ctx.arc(bearX + 8, bearY - 10, 10, 0, Math.PI * 2);
                         ctx.fill();
                         ctx.stroke();
 
-                        // Kulaklar
                         ctx.beginPath();
                         ctx.arc(bearX + 4, bearY - 18, 3, 0, Math.PI * 2);
                         ctx.arc(bearX + 13, bearY - 18, 3, 0, Math.PI * 2);
                         ctx.fill();
 
-                        // Göz ve Burun
                         ctx.fillStyle = '#2f3542';
                         ctx.beginPath();
                         ctx.arc(bearX + 11, bearY - 11, 1.5, 0, Math.PI * 2);
@@ -1645,7 +1660,6 @@
                 }
             });
         } else {
-            // Diğer temalar için standart elementler
             customBgElements.forEach(el => {
                 if (el.type === 'particle') {
                     ctx.save();
@@ -1717,7 +1731,6 @@
             ctx.restore();
         });
 
-        // --- ZEMİN KAPLAMASI ---
         let groundColor = selectedBg.theme === 'arctic_frost' ? '#1b4f72' : (selectedBg.theme === 'desert' ? '#c27820' : (selectedBg.theme === 'ocean' ? '#001d3d' : (selectedBg.isNight ? '#2c3e50' : '#eccc68')));
         let groundSubColor = selectedBg.theme === 'arctic_frost' ? '#154360' : (selectedBg.theme === 'desert' ? '#a36114' : (selectedBg.theme === 'ocean' ? '#000f1a' : (selectedBg.isNight ? '#1e272e' : '#2ed573')));
         
